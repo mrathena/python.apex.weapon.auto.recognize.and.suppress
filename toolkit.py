@@ -93,6 +93,7 @@ class Keyboard:
     @staticmethod
     def click(code):
         """
+        键盘按键函数中，传入的参数采用的是键盘按键对应的键码
         :param code: 'a'-'z':A键-Z键, '0'-'9':0-9, 其他的没猜出来
         :return:
         """
