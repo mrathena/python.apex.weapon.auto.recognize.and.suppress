@@ -29,28 +29,30 @@ sniper = 'sniper'  # 狙击弹药武器
 shotgun = 'shotgun'  # 霰弹枪弹药武器
 airdrop = 'airdrop'  # 空投武器
 
-ver = {
+config = {
     "3440:1440": {
         grab: {  # 截图配置, 便于定位武器名称/武器模式的特征点(用于取色判断)
             save: 'C:\\Users\\mrathena\\Desktop\\grab',  # 截图存放路径
-            arms1: [],  # 武器1的截图范围, xywh
-            arms2: [],  # 武器2的截图范围
+            arms1: [2944, 1381, 175, 26],  # 武器1的截图范围, xywh, 截图时需选到对应的武器
+            arms2: [3139, 1380, 175, 26],  # 武器2的截图范围
             mode: []  # 武器模式的截图范围
         },
         cheat: {  # 作弊配置
             detect: {  # 辨别检测
-                game: {  # 判断是否在游戏中
-                    positive: [  # 肯定的, 意思是这部分内容判定正确的话说明在游戏中
-                        {
-                            point: (),  # 点的坐标
-                            color: 1  # 点的颜色
-                        },
-                        {
-                            point: (),
-                            color: 1
-                        }
-                    ]
-                },
+                game: [  # 判断是否在游戏中
+                    {
+                        point: (236, 1344),  # 点的坐标, 血条左上角
+                        color: 0x00FFFFFF  # 点的颜色, 255, 255, 255
+                    },
+                    {
+                        point: (2947, 217),  # 性能参数左下角
+                        color: 0x00FFFFFF
+                    },
+                    {
+                        point: (2692, 1372),  # 生存物品右下角
+                        color: 0x959595  # 149, 149, 149
+                    }
+                ],
                 backpack: {  # 背包状态, 有无武器, 选择的武器
                     pixel1: {  # 像素点1
                         point: (),

@@ -1,12 +1,16 @@
+import mss  # pip install mss
+import ctypes
 import time
+
 from ctypes import CDLL
 
-import mss  # pip install mss
-import win32api  # conda install pywin32
-import win32con
-import win32gui
-import win32print
-import ctypes
+import cfg
+from cfg import config
+
+# 全局 dll
+user32 = ctypes.windll.user32
+gdi32 = ctypes.windll.gdi32
+hdc = user32.GetDC(None)
 
 try:
     driver = CDLL(r'mouse.device.lgs.dll')  # 在Python的string前面加上‘r’, 是为了告诉编译器这个string是个raw string(原始字符串),不要转义backslash(反斜杠) '\'
@@ -24,7 +28,7 @@ class Mouse:
         if ok:
             mx, my = x, y
             if absolute:
-                ox, oy = win32api.GetCursorPos()
+                ox, oy = user32.GetCursorPos()
                 mx = x - ox
                 my = y - oy
             driver.moveR(mx, my, True)
@@ -35,7 +39,7 @@ class Mouse:
         仿真移动
         """
         if ok:
-            ox, oy = win32api.GetCursorPos()  # 原鼠标位置
+            ox, oy = user32.GetCursorPos()  # 原鼠标位置
             mx, my = x, y  # 相对移动距离
             if absolute:
                 mx = x - ox
@@ -121,6 +125,18 @@ class Monitor:
         left, top, width, height = region
         return Monitor.sct.grab(monitor={'left': left, 'top': top, 'width': width, 'height': height})
 
+    @staticmethod
+    def pixel(x, y):
+        """
+        效率很低且不稳定, 单点检测都要耗时1-10ms
+        获取颜色, COLORREF 格式, 0x00FFFFFF
+        结果是int,
+        可以通过 print(hex(color)) 查看十六进制值
+        可以通过 print(color == 0x00FFFFFF) 进行颜色判断
+        """
+        # hdc = user32.GetDC(None)
+        return gdi32.GetPixel(hdc, x, y)
+
     class Resolution:
         """
         分辨率
@@ -131,11 +147,6 @@ class Monitor:
             """
             显示分辨率
             """
-            # import win32api, win32con, conda install pywin32
-            # w = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-            # h = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-            # import ctypes, 这样就不需要安装 pywin32 了
-            user32 = ctypes.windll.user32
             w = user32.GetSystemMetrics(0)
             h = user32.GetSystemMetrics(1)
             return w, h
@@ -145,11 +156,6 @@ class Monitor:
             """
             多屏幕组合的虚拟显示器分辨率
             """
-            # import win32api, win32con, conda install pywin32
-            # w = win32api.GetSystemMetrics(win32con.SM_CXVIRTUALSCREEN)
-            # h = win32api.GetSystemMetrics(win32con.SM_CYVIRTUALSCREEN)
-            # import ctypes, 这样就不需要安装 pywin32 了
-            user32 = ctypes.windll.user32
             w = user32.GetSystemMetrics(78)
             h = user32.GetSystemMetrics(79)
             return w, h
@@ -159,13 +165,29 @@ class Monitor:
             """
             物理分辨率
             """
-            hdc = win32gui.GetDC(0)
-            w = win32print.GetDeviceCaps(hdc, win32con.DESKTOPHORZRES)  # 横向分辨率
-            h = win32print.GetDeviceCaps(hdc, win32con.DESKTOPVERTRES)  # 纵向分辨率
+            # hdc = user32.GetDC(None)
+            w = gdi32.GetDeviceCaps(hdc, 118)
+            h = gdi32.GetDeviceCaps(hdc, 117)
             return w, h
 
 
+class Game:
+    """
+    游戏工具
+    """
 
-
-
-
+    @staticmethod
+    def inGame():
+        t1 = time.perf_counter_ns()
+        w, h = Monitor.Resolution.display()
+        t2 = time.perf_counter_ns()
+        lst = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.game)
+        t3 = time.perf_counter_ns()
+        for item in lst:
+            x, y = item.get(cfg.point)
+            if Monitor.pixel(x, y) != item.get(cfg.color):
+                return False
+        print(t2 - t1)
+        print(t3 - t2)
+        print(time.perf_counter_ns() - t3)
+        return True
