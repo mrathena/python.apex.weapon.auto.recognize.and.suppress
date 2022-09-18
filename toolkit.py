@@ -177,17 +177,35 @@ class Game:
     """
 
     @staticmethod
-    def inGame():
-        t1 = time.perf_counter_ns()
+    def game():
+        """
+        是否在游戏内
+        太耗时了, 所以不能调的多了
+        """
         w, h = Monitor.Resolution.display()
-        t2 = time.perf_counter_ns()
-        lst = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.game)
-        t3 = time.perf_counter_ns()
-        for item in lst:
+        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.game)
+        for item in data:
             x, y = item.get(cfg.point)
             if Monitor.pixel(x, y) != item.get(cfg.color):
                 return False
-        print(t2 - t1)
-        print(t3 - t2)
-        print(time.perf_counter_ns() - t3)
         return True
+
+    @staticmethod
+    def index():
+        """
+        武器索引
+        :return: 0:无武器, 1:1号武器, 2:2号武器, 3:拳头(这个不好判断)
+        """
+        w, h = Monitor.Resolution.display()
+        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.backpack)
+        pixel = data.get(cfg.pixel1)
+        x, y = pixel.get(cfg.point)
+        color = gdi32.GetPixel(hdc, x, y)
+        if color == pixel.get(cfg.color):
+            return 0
+        else:
+            pixel = data.get(cfg.pixel2)
+            x, y = pixel.get(cfg.point)
+            color2 = gdi32.GetPixel(hdc, x, y)
+            return 1 if color2 == color else 2
+

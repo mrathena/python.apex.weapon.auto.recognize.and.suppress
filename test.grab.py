@@ -21,12 +21,14 @@ def onClick(x, y, button, pressed):
             # img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
             # cv2.imshow('', img)
             # cv2.waitKey(0)
-            t1 = time.perf_counter_ns()
-            print(Game.inGame())
-            t2 = time.perf_counter_ns()
-            print((t2 - t1)//1000000)
+            # t1 = time.perf_counter_ns()
+            # print(hex(Monitor.pixel(2900, 1372)))
+            # print(Game.game())
+            print(Game.index())
+            # t2 = time.perf_counter_ns()
+            # print((t2 - t1)//1000000)
 
-            # print(Game.inGame())
+
 
 
 mouseListener = pynput.mouse.Listener(on_click=onClick)
