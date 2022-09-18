@@ -1,8 +1,12 @@
 import time
 from ctypes import CDLL
 
+import mss  # pip install mss
 import win32api  # conda install pywin32
-
+import win32con
+import win32gui
+import win32print
+import ctypes
 
 try:
     driver = CDLL(r'mouse.device.lgs.dll')  # 在Python的string前面加上‘r’, 是为了告诉编译器这个string是个raw string(原始字符串),不要转义backslash(反斜杠) '\'
@@ -100,3 +104,68 @@ class Keyboard:
         if ok:
             driver.key_down(code)
             driver.key_up(code)
+
+
+class Monitor:
+    """
+    显示器
+    """
+    sct = mss.mss()
+
+    @staticmethod
+    def grab(region):
+        """
+        region: tuple, (left, top, width, height)
+        pip install mss
+        """
+        left, top, width, height = region
+        return Monitor.sct.grab(monitor={'left': left, 'top': top, 'width': width, 'height': height})
+
+    class Resolution:
+        """
+        分辨率
+        """
+
+        @staticmethod
+        def display():
+            """
+            显示分辨率
+            """
+            # import win32api, win32con, conda install pywin32
+            # w = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+            # h = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+            # import ctypes, 这样就不需要安装 pywin32 了
+            user32 = ctypes.windll.user32
+            w = user32.GetSystemMetrics(0)
+            h = user32.GetSystemMetrics(1)
+            return w, h
+
+        @staticmethod
+        def virtual():
+            """
+            多屏幕组合的虚拟显示器分辨率
+            """
+            # import win32api, win32con, conda install pywin32
+            # w = win32api.GetSystemMetrics(win32con.SM_CXVIRTUALSCREEN)
+            # h = win32api.GetSystemMetrics(win32con.SM_CYVIRTUALSCREEN)
+            # import ctypes, 这样就不需要安装 pywin32 了
+            user32 = ctypes.windll.user32
+            w = user32.GetSystemMetrics(78)
+            h = user32.GetSystemMetrics(79)
+            return w, h
+
+        @staticmethod
+        def physical():
+            """
+            物理分辨率
+            """
+            hdc = win32gui.GetDC(0)
+            w = win32print.GetDeviceCaps(hdc, win32con.DESKTOPHORZRES)  # 横向分辨率
+            h = win32print.GetDeviceCaps(hdc, win32con.DESKTOPVERTRES)  # 纵向分辨率
+            return w, h
+
+
+
+
+
+
