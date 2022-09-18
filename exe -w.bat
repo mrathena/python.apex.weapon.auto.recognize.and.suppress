@@ -1,1 +1,0 @@
-pyinstaller -w main.py
