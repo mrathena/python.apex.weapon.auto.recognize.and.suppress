@@ -14,10 +14,7 @@ def down(x, y, button, pressed):
         return False  # 结束监听线程
     if pressed:  # 按下
         if pynput.mouse.Button.right == button:
-            t1 = time.perf_counter_ns()
             toolkit.Game.detect()
-            t = (time.perf_counter_ns() - t1) // 1000000
-            print(t)
 
 
 mouseListener = pynput.mouse.Listener(on_click=down)
