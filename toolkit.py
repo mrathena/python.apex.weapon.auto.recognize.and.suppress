@@ -1,6 +1,5 @@
 import mss  # pip install mss
 import ctypes
-import time
 
 from ctypes import CDLL
 
