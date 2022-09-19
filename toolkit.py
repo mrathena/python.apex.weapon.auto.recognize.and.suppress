@@ -4,7 +4,7 @@ import ctypes
 from ctypes import CDLL
 
 import cfg
-from cfg import config, weapon
+from cfg import detect, weapon
 
 # 全局 dll
 user32 = ctypes.windll.user32
@@ -39,7 +39,7 @@ class Mouse:
     @staticmethod
     def moveHumanoid(x, y, absolute=False):
         """
-        仿真移动
+        仿真移动(还没做好)
         """
         if ok:
             ox, oy = user32.GetCursorPos()  # 原鼠标位置
@@ -186,7 +186,7 @@ class Game:
         太耗时了, 所以不能调的多了
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.game)
+        data = detect.get(f'{w}:{h}').get(cfg.game)
         for item in data:
             x, y = item.get(cfg.point)
             if Monitor.pixel(x, y) != item.get(cfg.color):
@@ -196,21 +196,37 @@ class Game:
     @staticmethod
     def index():
         """
-        武器索引
-        :return: 1:1号位, 2:2号位, None:无武器, 拳头(这个暂时无法判断)
+        武器索引和子弹类型索引
+        :return: 武器位索引, 1:1号位, 2:2号位, None:无武器, 拳头(这个暂时无法判断)
+                 子弹类型索引, 1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投, None:无武器
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.backpack)
-        pixel = data.get(cfg.pixel1)
-        x, y = pixel.get(cfg.point)
+        data = detect.get(f'{w}:{h}').get(cfg.pack)
+        x, y = data.get(cfg.point)
         color = Monitor.pixel(x, y)
-        if color == pixel.get(cfg.color):
-            return None
+        if data.get(cfg.color) == color:
+            return None, None
         else:
-            pixel = data.get(cfg.pixel2)
-            x, y = pixel.get(cfg.point)
-            color2 = Monitor.pixel(x, y)
-            return 1 if color2 == color else 2
+            bullet = data.get(hex(color))
+            return 1, bullet if color == Monitor.pixel(x, y + 1) else 2, bullet
+
+    @staticmethod
+    def weapon(index, bullet):
+        """
+        通过武器位和子弹类型识别武器, 参考:config.detect.name
+        :param index: 武器位, 1:1号位, 2:2号位
+        :param bullet: 子弹类型, 1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投
+        :return:
+        """
+        w, h = Monitor.Resolution.display()
+        data = detect.get(f'{w}:{h}').get(cfg.name)
+        color = data.get(cfg.color)
+        lst = data.get(str(index)).get(str(bullet))
+        for i in range(len(lst)):
+            x, y = lst[i]
+            if color == Monitor.pixel(x, y):
+                return i + 1
+        return None
 
     @staticmethod
     def mode():
@@ -219,39 +235,35 @@ class Game:
         :return:  1:全自动, 2:半自动, None:其他
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.mode)
+        data = detect.get(f'{w}:{h}').get(cfg.mode)
         x, y = data.get(cfg.point)
         color = Monitor.pixel(x, y)
         return data.get(hex(color))
 
     @staticmethod
-    def bullet():
+    def detect():
         """
-        武器弹药类型
-        :return:  1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投, None:无武器
+        决策是否需要压枪, 向信号量写数据
         """
-        w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.bullet)
-        x, y = data.get(cfg.point)
-        color = Monitor.pixel(x, y)
-        return data.get(hex(color))
+        if Game.game() is False:
+            print('not in game')
 
-    @staticmethod
-    def name(index, bullet):
-        """
-        通过武器位和子弹类型识别武器, 参考:config.detect.name
-        :param index: 武器位, 1:1号位, 2:2号位
-        :param bullet: 子弹类型, 1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投
-        :return:
-        """
-        w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.name)
-        color = data.get(cfg.color)
-        lst = data.get(str(index)).get(str(bullet))
-        for i in range(len(lst)):
-            x, y = lst[i]
-            if color == Monitor.pixel(x, y):
-                print(weapon.get(str(bullet)).get(str(i + 1)).get(cfg.name))
-                return i + 1
-        print('detect failure')
-        return None
+            return
+        if Game.mode() is None:
+            print('not in full auto or semi auto mode')
+
+            return
+        index, bullet = Game.index()
+        if (index is None) | (bullet is None):
+            print('no weapon')
+
+            return
+
+        arms = Game.weapon(index, bullet)
+        if arms is None:
+            print('detect weapon failure')
+
+            return
+        # 检测通过, 需要压枪
+        print(weapon.get(str(bullet)).get(str(arms)).get(cfg.name))
+
