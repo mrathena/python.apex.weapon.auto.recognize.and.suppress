@@ -187,7 +187,7 @@ class Game:
         太耗时了, 所以不能调的多了
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.game)
+        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.game)
         for item in data:
             x, y = item.get(cfg.point)
             if Monitor.pixel(x, y) != item.get(cfg.color):
@@ -201,7 +201,7 @@ class Game:
         :return: 1:1号武器, 2:2号武器, None:无武器, 拳头(这个暂时无法判断)
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.backpack)
+        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.backpack)
         pixel = data.get(cfg.pixel1)
         x, y = pixel.get(cfg.point)
         color = Monitor.pixel(x, y)(hdc, x, y)
@@ -220,7 +220,7 @@ class Game:
         :return:  1:全自动, 2:半自动, None:其他
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.mode)
+        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.mode)
         x, y = data.get(cfg.point)
         color = Monitor.pixel(x, y)
         return data.get(hex(color))
@@ -232,7 +232,7 @@ class Game:
         :return:  1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投, None:无武器
         """
         w, h = Monitor.Resolution.display()
-        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.bullet)
+        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.bullet)
         x, y = data.get(cfg.point)
         color = Monitor.pixel(x, y)
         return data.get(hex(color))
