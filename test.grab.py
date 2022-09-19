@@ -7,7 +7,7 @@ import pynput  # conda install pynput
 
 from toolkit import Monitor, Game
 import cfg
-from cfg import config
+from cfg import detect
 
 
 def onClick(x, y, button, pressed):
@@ -40,24 +40,4 @@ mouseListener = pynput.mouse.Listener(on_click=onClick)
 mouseListener.start()
 mouseListener.join()
 
-
-def onClick(x, y, button, pressed):
-    global ExitFlag
-    if ExitFlag:
-        return False  # 结束监听线程
-    if pressed:  # 按下
-        if pynput.mouse.Button.right == button:
-            print('right')
-
-listener = pynput.mouse.Listener(on_click=onClick)
-listener.start()
-listener.join
-
-
-def onRelease(key):
-    print(f'{key} released')
-    if key == pynput.keyboard.Key.end:
-        return False  # 正常不要返回False, 这样会结束监听并停止监听线程, 在关闭程序前返回False就好了
-listener = pynput.keyboard.Listener(on_release=onRelease)
-listener.start()
 
