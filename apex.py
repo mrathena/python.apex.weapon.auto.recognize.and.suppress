@@ -1,3 +1,5 @@
+import time
+
 import pynput  # conda install pynput
 
 import toolkit
@@ -12,7 +14,9 @@ def down(x, y, button, pressed):
         return False  # 结束监听线程
     if pressed:  # 按下
         if pynput.mouse.Button.right == button:
+            t1 = time.perf_counter_ns()
             toolkit.Game.detect()
+            print((time.perf_counter_ns() - t1) // 1000000)
 
 
 mouseListener = pynput.mouse.Listener(on_click=down)
