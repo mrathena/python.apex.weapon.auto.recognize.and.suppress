@@ -58,28 +58,20 @@ config = {
                         point: (2900, 1373)  # 两把武器时, 1号武器上面边框分界线的下半部分
                     }
                 },
-                mode: {  # 武器模式, 全自动/半自动/单发
-                    pixel1: {  # 像素点1
-                        point: (),
-                        color: 1
-                    },
-                    pixel2: {
-                        point: (),
-                        color: 1
-                    }
+                mode: {  # 武器模式, 全自动/半自动/单发/其他
+                    point: (3148, 1349),
+                    '0xf8f8f8': 1,  # 全自动
+                    '0xfefefe': 2  # 半自动
                 },
-                bullet: {  # 子弹类型
-                    pixel: {
-                        point: (),
-                        color: 1
-                    },
-                    negative: [],  # 不需要压枪的颜色, 狙和喷子
-                    '棕色': light,  # 轻型弹药武器
-                    'dark green': heavy,  # 重型弹药武器
-                    'light green': energy,  # 能量弹药武器
-                    'dark blue': sniper,  # 狙击弹药武器
-                    '喷子色': shotgun,  # 霰弹枪弹药武器
-                    'airdrop': airdrop  # 空投武器
+                bullet: {  # 子弹类型, 1/2/3/4/5/6/None(无武器)
+                    point: (2900, 1372),
+                    '0x447bb4': 1,  # 轻型弹药武器
+                    '0x839b54': 2,  # 重型弹药武器
+                    '0x3da084': 3,  # 能量弹药武器
+                    '0xce5f6e': 4,  # 狙击弹药武器
+                    '0xf339b': 5,  # 霰弹枪弹药武器
+                    '0x5302ff': 6,  # 空投武器
+                    negative: []  # 不需要压枪的颜色, 狙和喷子
                 },
                 name: {  # 武器名称判断
                     light: [],

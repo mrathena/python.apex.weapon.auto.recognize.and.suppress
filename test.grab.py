@@ -1,3 +1,4 @@
+import datetime
 import time
 
 import cv2  # conda install cv2
@@ -16,15 +17,19 @@ def onClick(x, y, button, pressed):
         if pynput.mouse.Button.x1 == button:
             w, h = Monitor.Resolution.display()
             # print(config.get(f'{w}:{h}').get(cfg.grab).get(cfg.arms1))
-            # img = Monitor.grab(ver[f'{w}:{h}'][ver.grab][ver.arms1])
+            # img = Monitor.grab([3143, 1345, 31, 18])
             # img = np.array(img)
             # img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-            # cv2.imshow('', img)
-            # cv2.waitKey(0)
+            # now = datetime.datetime.now()
+            # print(now)
+            # print(type(now.strftime("%Y%m%d%H%M%S.png")))
+            # cv2.imwrite(f'C:\\Users\\mrathena\\Desktop\\{now.strftime("%Y%m%d %H%M%S.png")}', img, [int(cv2.IMWRITE_PNG_COMPRESSION), 0])
             # t1 = time.perf_counter_ns()
-            # print(hex(Monitor.pixel(2900, 1372)))
+            print(hex(Monitor.pixel(2900, 1372)))
             # print(Game.game())
-            print(Game.index())
+            # print(Game.index())
+            # print(Game.mode())
+            print(Game.bullet())
             # t2 = time.perf_counter_ns()
             # print((t2 - t1)//1000000)
 

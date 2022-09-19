@@ -24,6 +24,10 @@ except FileNotFoundError:
 class Mouse:
 
     @staticmethod
+    def point():
+        return user32.GetCursorPos()
+
+    @staticmethod
     def move(x, y, absolute=False):
         if ok:
             mx, my = x, y
@@ -194,18 +198,41 @@ class Game:
     def index():
         """
         武器索引
-        :return: 0:无武器, 1:1号武器, 2:2号武器, 3:拳头(这个不好判断)
+        :return: 1:1号武器, 2:2号武器, None:无武器, 拳头(这个暂时无法判断)
         """
         w, h = Monitor.Resolution.display()
         data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.backpack)
         pixel = data.get(cfg.pixel1)
         x, y = pixel.get(cfg.point)
-        color = gdi32.GetPixel(hdc, x, y)
+        color = Monitor.pixel(x, y)(hdc, x, y)
         if color == pixel.get(cfg.color):
-            return 0
+            return None
         else:
             pixel = data.get(cfg.pixel2)
             x, y = pixel.get(cfg.point)
-            color2 = gdi32.GetPixel(hdc, x, y)
+            color2 = Monitor.pixel(x, y)(hdc, x, y)
             return 1 if color2 == color else 2
 
+    @staticmethod
+    def mode():
+        """
+        武器模式
+        :return:  1:全自动, 2:半自动, None:其他
+        """
+        w, h = Monitor.Resolution.display()
+        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.mode)
+        x, y = data.get(cfg.point)
+        color = Monitor.pixel(x, y)
+        return data.get(hex(color))
+
+    @staticmethod
+    def bullet():
+        """
+        武器弹药类型
+        :return:  1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投, None:无武器
+        """
+        w, h = Monitor.Resolution.display()
+        data = config.get(f'{w}:{h}').get(cfg.cheat).get(cfg.detect).get(cfg.bullet)
+        x, y = data.get(cfg.point)
+        color = Monitor.pixel(x, y)
+        return data.get(hex(color))
