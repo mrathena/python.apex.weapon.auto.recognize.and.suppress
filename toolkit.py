@@ -257,16 +257,15 @@ class Game:
             print('not in game')
 
             return
-        if Game.mode() is None:
-            print('not in full auto or semi auto mode')
-
-            return
         index, bullet = Game.index()
         if (index is None) | (bullet is None):
             print('no weapon')
 
             return
+        if Game.mode() is None:
+            print('not in full auto or semi auto mode')
 
+            return
         arms = Game.weapon(index, bullet)
         if arms is None:
             print('detect weapon failure')
