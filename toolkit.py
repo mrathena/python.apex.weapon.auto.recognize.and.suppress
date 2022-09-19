@@ -208,7 +208,7 @@ class Game:
             return None, None
         else:
             bullet = data.get(hex(color))
-            return 1, bullet if color == Monitor.pixel(x, y + 1) else 2, bullet
+            return (1, bullet) if color == Monitor.pixel(x, y + 1) else (2, bullet)
 
     @staticmethod
     def weapon(index, bullet):
@@ -221,11 +221,19 @@ class Game:
         w, h = Monitor.Resolution.display()
         data = detect.get(f'{w}:{h}').get(cfg.name)
         color = data.get(cfg.color)
-        lst = data.get(str(index)).get(str(bullet))
-        for i in range(len(lst)):
-            x, y = lst[i]
-            if color == Monitor.pixel(x, y):
-                return i + 1
+        if index == 1:
+            lst = data.get(str(index)).get(str(bullet))
+            for i in range(len(lst)):
+                x, y = lst[i]
+                if color == Monitor.pixel(x, y):
+                    return i + 1
+        elif index == 2:
+            differ = data.get(str(index)).get(cfg.differ)
+            lst = data.get(str(1)).get(str(bullet))
+            for i in range(len(lst)):
+                x, y = lst[i]
+                if color == Monitor.pixel(x + differ, y):
+                    return i + 1
         return None
 
     @staticmethod
@@ -266,4 +274,4 @@ class Game:
             return
         # 检测通过, 需要压枪
         print(weapon.get(str(bullet)).get(str(arms)).get(cfg.name))
-
+        return weapon.get(str(bullet)).get(str(arms)).get(cfg.name)

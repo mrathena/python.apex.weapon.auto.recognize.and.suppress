@@ -8,6 +8,7 @@ color = 'color'
 point = 'point'
 index = 'index'
 bullet = 'bullet'  # 子弹
+differ = 'differ'
 positive = 'positive'  # 肯定的
 negative = 'negative'  # 否定的
 
@@ -85,12 +86,7 @@ detect = {
                 ]
             },
             '2': {
-                '1': {},
-                '2': {},
-                '3': {},
-                '4': {},
-                '5': {},
-                '6': {}
+                differ: 195
             }
         }
     },

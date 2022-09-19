@@ -16,12 +16,12 @@ def down(x, y, button, pressed):
         if pynput.mouse.Button.right == button:
             t1 = time.perf_counter_ns()
             toolkit.Game.detect()
-            print((time.perf_counter_ns() - t1) // 1000000)
+            t = (time.perf_counter_ns() - t1) // 1000000
+            print(t)
 
 
 mouseListener = pynput.mouse.Listener(on_click=down)
 mouseListener.start()
-
 
 
 def release(key):
