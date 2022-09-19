@@ -5,7 +5,7 @@ import time
 from ctypes import CDLL
 
 import cfg
-from cfg import config
+from cfg import config, weapon
 
 # 全局 dll
 user32 = ctypes.windll.user32
@@ -198,19 +198,19 @@ class Game:
     def index():
         """
         武器索引
-        :return: 1:1号武器, 2:2号武器, None:无武器, 拳头(这个暂时无法判断)
+        :return: 1:1号位, 2:2号位, None:无武器, 拳头(这个暂时无法判断)
         """
         w, h = Monitor.Resolution.display()
         data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.backpack)
         pixel = data.get(cfg.pixel1)
         x, y = pixel.get(cfg.point)
-        color = Monitor.pixel(x, y)(hdc, x, y)
+        color = Monitor.pixel(x, y)
         if color == pixel.get(cfg.color):
             return None
         else:
             pixel = data.get(cfg.pixel2)
             x, y = pixel.get(cfg.point)
-            color2 = Monitor.pixel(x, y)(hdc, x, y)
+            color2 = Monitor.pixel(x, y)
             return 1 if color2 == color else 2
 
     @staticmethod
@@ -236,3 +236,23 @@ class Game:
         x, y = data.get(cfg.point)
         color = Monitor.pixel(x, y)
         return data.get(hex(color))
+
+    @staticmethod
+    def name(index, bullet):
+        """
+        通过武器位和子弹类型识别武器, 参考:config.detect.name
+        :param index: 武器位, 1:1号位, 2:2号位
+        :param bullet: 子弹类型, 1:轻型, 2:重型, 3:能量, 4:狙击, 5:霰弹, 6:空投
+        :return:
+        """
+        w, h = Monitor.Resolution.display()
+        data = config.get(f'{w}:{h}').get(cfg.detect).get(cfg.name)
+        color = data.get(cfg.color)
+        lst = data.get(str(index)).get(str(bullet))
+        for i in range(len(lst)):
+            x, y = lst[i]
+            if color == Monitor.pixel(x, y):
+                print(weapon.get(str(bullet)).get(str(i + 1)).get(cfg.name))
+                return i + 1
+        print('detect failure')
+        return None
