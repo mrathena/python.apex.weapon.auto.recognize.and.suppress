@@ -42,7 +42,7 @@ def listener(data):
             return False
         elif key == pynput.keyboard.Key.home:
             # 压枪开关
-            pass
+            data[switch] = not data[switch]
         elif key == pynput.keyboard.Key.tab:
             toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('1'):
