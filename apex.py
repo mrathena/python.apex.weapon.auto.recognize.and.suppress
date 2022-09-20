@@ -1,4 +1,5 @@
 import multiprocessing
+import time
 from multiprocessing import Process
 
 import pynput  # conda install pynput
@@ -60,8 +61,7 @@ def listener(data):
     keyboard.join()  # 卡住进程 listener, 当线程 keyboard 结束后, 进程 listener 才能结束
 
 
-def fire(data):
-    nonlocal data
+def suppress(data):
     while True:
         if data[end]:
             break
@@ -72,7 +72,8 @@ def fire(data):
             while True:
                 if not data[fire]:
                     break
-
+                toolkit.Mouse.move(0, 10)
+                time.sleep(0.01)
 
 
 if __name__ == '__main__':
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
     p1 = Process(target=listener, args=(data,))  # 监听进程
-    p2 = Process(target=fire, args=(data,))  # 开火进程
+    p2 = Process(target=suppress, args=(data,))  # 压枪进程
     p1.start()
     p2.start()
     p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
