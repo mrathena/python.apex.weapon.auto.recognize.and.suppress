@@ -323,4 +323,3 @@ class Game:
         data[cfg.turbo] = Game.turbo(bullet, arms)
         t2 = time.perf_counter_ns()
         print(f'耗时:{t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}{"(涡轮)" if data.get(cfg.turbo) else ""}')
-
