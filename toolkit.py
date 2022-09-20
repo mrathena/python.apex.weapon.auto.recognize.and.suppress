@@ -30,6 +30,8 @@ class Mouse:
     @staticmethod
     def move(x, y, absolute=False):
         if ok:
+            if (x == 0) & (y == 0):
+                return
             mx, my = x, y
             if absolute:
                 ox, oy = user32.GetCursorPos()
@@ -183,7 +185,7 @@ class Game:
     @staticmethod
     def game():
         """
-        是否在游戏内(顶层窗口是游戏,且正在进行一局游戏,且游戏界面上有血条)
+        是否游戏窗体在最前
         """
         # 先判断是否是游戏窗口
         hwnd = user32.GetForegroundWindow()
@@ -192,6 +194,13 @@ class Game:
         user32.GetWindowTextW(hwnd, buffer, length + 1)
         if 'Apex Legends' != buffer.value:
             return False
+        return True
+
+    @staticmethod
+    def play():
+        """
+        是否正在玩
+        """
         # 是在游戏中, 再判断下是否有血条和生存物品包
         w, h = Monitor.Resolution.display()
         data = detect.get(f'{w}:{h}').get(cfg.game)
@@ -266,11 +275,15 @@ class Game:
         """
         决策是否需要压枪, 向信号量写数据
         """
-        if data[cfg.switch] is False:
+        if data.get(cfg.switch) is False:
             print('开关已关闭')
             return
         t1 = time.perf_counter_ns()
         if Game.game() is False:
+            print('不在游戏中')
+            data[cfg.shake] = None
+            return
+        if Game.play() is False:
             print('不在游戏中')
             data[cfg.shake] = None
             return
@@ -291,6 +304,7 @@ class Game:
         # 检测通过, 需要压枪
         gun = weapon.get(str(bullet)).get(str(arms))
         data[cfg.shake] = gun.get(cfg.shake)  # 记录当前武器抖动参数
+        data[cfg.restrain] = gun.get(cfg.restrain)  # 记录当前武器压制参数
         t2 = time.perf_counter_ns()
         print(f'耗时:{t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}')
 

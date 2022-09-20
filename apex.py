@@ -4,8 +4,7 @@ from multiprocessing import Process
 
 import pynput  # conda install pynput
 
-import toolkit
-
+from toolkit import Mouse, Game
 
 end = 'end'
 fire = 'fire'
@@ -13,23 +12,25 @@ shake = 'shake'
 speed = 'speed'
 count = 'count'
 switch = 'switch'
+restrain = 'restrain'
 strength = 'strength'
 init = {
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
     switch: True,  # 开关
     fire: False,  # 开火状态
     shake: None,  # 抖枪参数
+    restrain: None,  # 压枪参数
 }
 
 
 def listener(data):
 
     def down(x, y, button, pressed):
-        if data[end]:
+        if data.get(end):
             return False  # 结束监听线程
         if button == pynput.mouse.Button.right:
             if pressed:
-                toolkit.Game.detect(data)
+                Game.detect(data)
         elif button == pynput.mouse.Button.left:
             data[fire] = pressed
 
@@ -43,21 +44,21 @@ def listener(data):
             return False
         elif key == pynput.keyboard.Key.home:
             # 压枪开关
-            data[switch] = not data[switch]
+            data[switch] = not data.get(switch)
         elif key == pynput.keyboard.Key.esc:
-            toolkit.Game.detect(data)
+            Game.detect(data)
         elif key == pynput.keyboard.Key.tab:
-            toolkit.Game.detect(data)
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('1'):
-            toolkit.Game.detect(data)
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('2'):
-            toolkit.Game.detect(data)
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('3'):
-            toolkit.Game.detect(data)
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('e'):
-            toolkit.Game.detect(data)
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('v'):
-            toolkit.Game.detect(data)
+            Game.detect(data)
 
     keyboard = pynput.keyboard.Listener(on_release=release)
     keyboard.start()
@@ -66,36 +67,42 @@ def listener(data):
 
 def suppress(data):
     while True:
-        if data[end]:
+        if data.get(end):
             break
-        if data[switch] is False:
+        if data.get(switch) is False:
             continue
-        if data[fire] & (data[shake] is not None):
-            # 301 大约75ms一发子弹
-            total = 0  # 总计时 ms
-            delay = 1  # 延迟 ms
-            pixel = 4  # 抖动像素
-            while True:
-                if not data[fire]:
-                    break
-                # 下压
-                t = time.perf_counter_ns()
-                if total < data[shake][speed] * data[shake][count]:
-                    toolkit.Mouse.move(0, data[shake][strength])
+        if Game.game() & data.get(fire):
+            if data.get(restrain) is not None:
+                for item in data.get(restrain):
+                    if not data.get(fire):
+                        break
+                    delay, x, y = item
+                    Mouse.move(x * 4, y * 3)
+                    time.sleep(delay / 1000)
+            elif data.get(shake) is not None:
+                total = 0  # 总计时 ms
+                delay = 1  # 延迟 ms
+                pixel = 4  # 抖动像素
+                while True:
+                    if not data[fire]:
+                        break
+                    t = time.perf_counter_ns()
+                    if total < data[shake][speed] * data[shake][count]:
+                        Mouse.move(0, data[shake][strength])
+                        time.sleep(delay / 1000)
+                        total += delay
+                    else:
+                        Mouse.move(0, 1)
+                        time.sleep(delay / 1000)
+                        total += delay
+                    # 抖枪
+                    Mouse.move(pixel, 0)
                     time.sleep(delay / 1000)
                     total += delay
-                else:
-                    toolkit.Mouse.move(0, 1)
+                    Mouse.move(-pixel, 0)
                     time.sleep(delay / 1000)
                     total += delay
-                # 抖枪
-                toolkit.Mouse.move(pixel, 0)
-                time.sleep(delay / 1000)
-                total += delay
-                toolkit.Mouse.move(-pixel, 0)
-                time.sleep(delay / 1000)
-                total += delay
-                total += (time.perf_counter_ns() - t) // 1000 // 1000
+                    total += (time.perf_counter_ns() - t) // 1000 // 1000
 
 
 if __name__ == '__main__':
