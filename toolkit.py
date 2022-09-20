@@ -5,8 +5,6 @@ import ctypes
 
 from ctypes import CDLL
 
-import win32gui
-
 import cfg
 from cfg import detect, weapon
 
@@ -141,7 +139,7 @@ class Monitor:
         可以通过 print(color == 0x00FFFFFF) 进行颜色判断
         """
         hdc = user32.GetDC(None)
-        return win32gui.GetPixel(hdc, x, y)
+        return gdi32.GetPixel(hdc, x, y)
 
     class Resolution:
         """
