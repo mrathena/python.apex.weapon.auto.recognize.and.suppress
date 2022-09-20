@@ -22,21 +22,21 @@ init = {
 def listener(data):
 
     def down(x, y, button, pressed):
-        nonlocal data
-        if data.get(end):
+        if data[end]:
             return False  # 结束监听线程
         if button == pynput.mouse.Button.right:
             if pressed:
                 toolkit.Game.detect(data)
         elif button == pynput.mouse.Button.left:
             data[fire] = pressed
+            print(time.perf_counter_ns())
 
     mouse = pynput.mouse.Listener(on_click=down)
     mouse.start()
 
     def release(key):
-        nonlocal data
         if key == pynput.keyboard.Key.end:
+            print(data, end)
             # 结束程序
             data[end] = True
             return False
@@ -60,12 +60,11 @@ def listener(data):
 
     keyboard = pynput.keyboard.Listener(on_release=release)
     keyboard.start()
-    keyboard.join()  # 卡住进程 listener, 当线程 keyboard 结束后, 进程 listener 才能结束
+    keyboard.join()  # 卡住监听进程, 当键盘线程结束后, 监听进程才能结束
 
 
 def suppress(data):
     while True:
-        time.sleep(0.001)
         if data[end]:
             break
         if data[switch] is False:
