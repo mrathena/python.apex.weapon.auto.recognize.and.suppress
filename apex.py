@@ -90,13 +90,7 @@ def suppress(data):
                 toolkit.Mouse.move(pixel, 0)
                 time.sleep(delay / 1000)
                 total += delay
-                toolkit.Mouse.move(0, pixel)
-                time.sleep(delay / 1000)
-                total += delay
                 toolkit.Mouse.move(-pixel, 0)
-                time.sleep(delay / 1000)
-                total += delay
-                toolkit.Mouse.move(0, -pixel)
                 time.sleep(delay / 1000)
                 total += delay
 
