@@ -12,8 +12,8 @@ fire = 'fire'
 shake = 'shake'
 switch = 'switch'
 init = {
-    switch: True,  # 压枪开关
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
+    switch: True,  # 压枪开关
     shake: None,  # 抖枪参数
     fire: False,  # 开火状态
 }
