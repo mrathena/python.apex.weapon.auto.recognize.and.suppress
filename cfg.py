@@ -2,7 +2,7 @@ mode = 'mode'
 name = 'name'
 game = 'game'
 data = 'data'
-pack = 'pack'  # 背包
+pack = 'pack'
 color = 'color'
 point = 'point'
 index = 'index'
@@ -12,7 +12,7 @@ count = 'count'
 switch = 'switch'
 bullet = 'bullet'  # 子弹
 differ = 'differ'
-suppress = 'suppress'
+restrain = 'restrain'
 strength = 'strength'
 positive = 'positive'  # 肯定的
 negative = 'negative'  # 否定的
@@ -132,8 +132,9 @@ weapon = {
                 count: 6,  # 压制前6发
                 strength: 5,  # 压制的力度(下移的像素)
             },
-            suppress: {
+            restrain: {
                 speed: 74,
+
             }
         },
         '4': {
