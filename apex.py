@@ -74,7 +74,7 @@ def suppress(data):
         if data.get(switch) is False:
             continue
         if Game.game() & data.get(fire):
-            print(data[turbo])
+
             if data.get(restrain) is not None:
                 for item in data.get(restrain):
                     if not data.get(fire):
