@@ -11,7 +11,6 @@ from cfg import detect, weapon
 # 全局 dll
 user32 = ctypes.windll.user32
 gdi32 = ctypes.windll.gdi32
-hdc = user32.GetDC(None)
 
 try:
     driver = CDLL(r'mouse.device.lgs.dll')  # 在Python的string前面加上‘r’, 是为了告诉编译器这个string是个raw string(原始字符串),不要转义backslash(反斜杠) '\'
@@ -139,7 +138,7 @@ class Monitor:
         可以通过 print(hex(color)) 查看十六进制值
         可以通过 print(color == 0x00FFFFFF) 进行颜色判断
         """
-        # hdc = user32.GetDC(None)
+        hdc = user32.GetDC(None)
         return gdi32.GetPixel(hdc, x, y)
 
     class Resolution:
@@ -170,7 +169,7 @@ class Monitor:
             """
             物理分辨率
             """
-            # hdc = user32.GetDC(None)
+            hdc = user32.GetDC(None)
             w = gdi32.GetDeviceCaps(hdc, 118)
             h = gdi32.GetDeviceCaps(hdc, 117)
             return w, h
@@ -253,9 +252,14 @@ class Game:
         """
         w, h = Monitor.Resolution.display()
         data = detect.get(f'{w}:{h}').get(cfg.mode)
-        x, y = data.get(cfg.point)
-        color = Monitor.pixel(x, y)
-        return data.get(hex(color))
+        color = data.get(cfg.color)
+        x, y = data.get('1')
+        if color == Monitor.pixel(x, y):
+            return 1
+        x, y = data.get('2')
+        if color == Monitor.pixel(x, y):
+            return 2
+        return None
 
     @staticmethod
     def detect(data):

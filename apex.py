@@ -68,11 +68,14 @@ def suppress(data):
         if data[switch] is False:
             continue
         if data[fire] & (data[shake] is not None):
-            print(data[shake])
             while True:
                 if not data[fire]:
                     break
-                toolkit.Mouse.move(0, 10)
+                toolkit.Mouse.move(4, 0)
+                time.sleep(0.01)
+                toolkit.Mouse.move(-4, 0)
+                time.sleep(0.01)
+                toolkit.Mouse.move(0, 5)
                 time.sleep(0.01)
 
 
