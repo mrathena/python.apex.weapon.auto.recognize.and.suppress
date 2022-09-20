@@ -43,6 +43,8 @@ def listener(data):
         elif key == pynput.keyboard.Key.home:
             # 压枪开关
             data[switch] = not data[switch]
+        elif key == pynput.keyboard.Key.esc:
+            toolkit.Game.detect(data)
         elif key == pynput.keyboard.Key.tab:
             toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('1'):
@@ -68,28 +70,35 @@ def suppress(data):
         if data[switch] is False:
             continue
         if data[fire] & (data[shake] is not None):
+            total = 0  # 总计时 ms
+            delay = 5  # 延迟 ms
+            pixel = 4  # 抖动像素
             while True:
-                total = 0  # 总计时 ms
-                delay = 1  # 延迟 ms
                 if not data[fire]:
                     break
-                # 抖枪
-                toolkit.Mouse.move(5, 0)
-                time.sleep(total / 1000)
-                total += delay
-                toolkit.Mouse.move(0, 5)
-                time.sleep(total / 1000)
-                toolkit.Mouse.move(-5, 0)
-                time.sleep(total / 1000)
-                total += delay
-                toolkit.Mouse.move(0, -5)
-                time.sleep(total / 1000)
-                total += delay
                 # 下压
-                if total < 10:
-                    toolkit.Mouse.move(0, 5)
-                    time.sleep(total / 1000)
+                if total < 150:
+                    toolkit.Mouse.move(0, 10)
+                    time.sleep(delay / 1000)
                     total += delay
+                else:
+                    toolkit.Mouse.move(0, 1)
+                    time.sleep(delay / 1000)
+                    total += delay
+                # 抖枪
+                toolkit.Mouse.move(pixel, 0)
+                time.sleep(delay / 1000)
+                total += delay
+                toolkit.Mouse.move(0, pixel)
+                time.sleep(delay / 1000)
+                total += delay
+                toolkit.Mouse.move(-pixel, 0)
+                time.sleep(delay / 1000)
+                total += delay
+                toolkit.Mouse.move(0, -pixel)
+                time.sleep(delay / 1000)
+                total += delay
+
 
 
 if __name__ == '__main__':
