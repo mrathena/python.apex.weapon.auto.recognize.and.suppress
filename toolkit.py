@@ -267,25 +267,25 @@ class Game:
         决策是否需要压枪, 向信号量写数据
         """
         if data[cfg.switch] is False:
-            print('detect and suppress switch is off')
+            print('开关已关闭')
             return
         t1 = time.perf_counter_ns()
         if Game.game() is False:
-            print('not in game')
+            print('不在游戏中')
             data[cfg.shake] = None
             return
         index, bullet = Game.index()
         if (index is None) | (bullet is None):
-            print('no weapon')
+            print('没有武器')
             data[cfg.shake] = None
             return
         if Game.mode() is None:
-            print('not in full auto or semi auto mode')
+            print('不是自动/半自动武器')
             data[cfg.shake] = None
             return
         arms = Game.weapon(index, bullet)
         if arms is None:
-            print('detect weapon failure')
+            print('识别武器失败')
             data[cfg.shake] = None
             return
         # 检测通过, 需要压枪
