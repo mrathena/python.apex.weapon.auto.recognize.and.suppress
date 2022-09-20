@@ -77,7 +77,7 @@ def suppress(data):
                     if not data.get(fire):
                         break
                     delay, x, y = item
-                    Mouse.move(x * 4, y * 3)
+                    Mouse.move(x, y)
                     time.sleep(delay / 1000)
             elif data.get(shake) is not None:
                 total = 0  # 总计时 ms
