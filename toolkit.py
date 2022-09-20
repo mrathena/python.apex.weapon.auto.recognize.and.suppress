@@ -258,30 +258,35 @@ class Game:
         return data.get(hex(color))
 
     @staticmethod
-    def detect():
+    def detect(data):
         """
         决策是否需要压枪, 向信号量写数据
         """
-        t = time.perf_counter_ns()
+        if data[cfg.switch] is False:
+            print('gun press switch is off')
+            return
+        t1 = time.perf_counter_ns()
         if Game.game() is False:
             print('not in game')
-
+            data[cfg.shake] = None
             return
         index, bullet = Game.index()
         if (index is None) | (bullet is None):
             print('no weapon')
-
+            data[cfg.shake] = None
             return
         if Game.mode() is None:
             print('not in full auto or semi auto mode')
-
+            data[cfg.shake] = None
             return
         arms = Game.weapon(index, bullet)
         if arms is None:
             print('detect weapon failure')
-
+            data[cfg.shake] = None
             return
         # 检测通过, 需要压枪
+        gun = weapon.get(str(bullet)).get(str(arms))
+        data[cfg.shake] = gun.get(cfg.shake)  # 记录当前武器抖动参数
         t2 = time.perf_counter_ns()
-        print(f'耗时:{t2-t}ns, 约{(t2-t)//1000000}ms, {weapon.get(str(bullet)).get(str(arms)).get(cfg.name)}')
+        print(f'耗时:{t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}')
 

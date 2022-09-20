@@ -7,6 +7,8 @@ pack = 'pack'  # 背包
 color = 'color'
 point = 'point'
 index = 'index'
+shake = 'shake'
+switch = 'switch'
 bullet = 'bullet'  # 子弹
 differ = 'differ'
 positive = 'positive'  # 肯定的
@@ -112,6 +114,9 @@ weapon = {
         },
         '3': {
             name: 'R-301 卡宾枪',
+            shake: {
+
+            }
         },
         '4': {
             name: 'R-99 冲锋枪',

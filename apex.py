@@ -6,13 +6,16 @@ import pynput  # conda install pynput
 import toolkit
 
 
-init = {
-    'switch': True,  # 压枪开关
-    'end': False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
-    'weapon': None,  # 当前正在使用的武器, 格式为: (子弹类型, 武器序号), 参照 cfg.py 里面的 weapon 部分
-}
 end = 'end'
-weapon = 'weapon'
+fire = 'fire'
+shake = 'shake'
+switch = 'switch'
+init = {
+    switch: True,  # 压枪开关
+    end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
+    shake: None,  # 抖枪参数
+    fire: False,  # 开火状态
+}
 
 
 def listener(data):
@@ -21,9 +24,11 @@ def listener(data):
         nonlocal data
         if data.get(end):
             return False  # 结束监听线程
-        if pressed:  # 按下
-            if pynput.mouse.Button.right == button:
-                toolkit.Game.detect()
+        if button == pynput.mouse.Button.right:
+            if pressed:
+                toolkit.Game.detect(data)
+        elif button == pynput.mouse.Button.left:
+            data[fire] = pressed
 
     mouse = pynput.mouse.Listener(on_click=down)
     mouse.start()
@@ -38,17 +43,17 @@ def listener(data):
             # 压枪开关
             pass
         elif key == pynput.keyboard.Key.tab:
-            toolkit.Game.detect()
+            toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('1'):
-            toolkit.Game.detect()
+            toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('2'):
-            toolkit.Game.detect()
+            toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('3'):
-            toolkit.Game.detect()
+            toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('e'):
-            toolkit.Game.detect()
+            toolkit.Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('v'):
-            toolkit.Game.detect()
+            toolkit.Game.detect(data)
 
     keyboard = pynput.keyboard.Listener(on_release=release)
     keyboard.start()
@@ -57,7 +62,17 @@ def listener(data):
 
 def fire(data):
     nonlocal data
-    pass
+    while True:
+        if data[end]:
+            break
+        if data[switch] is False:
+            continue
+        if data[fire] & (data[shake] is not None):
+            print(data[shake])
+            while True:
+                if not data[fire]:
+                    break
+
 
 
 if __name__ == '__main__':
@@ -66,9 +81,8 @@ if __name__ == '__main__':
     data = manager.dict()  # 创建进程安全的共享变量
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
-    p1 = Process(target=listener, args=(data,))
-    p2 = Process(target=fire, args=(data,))
+    p1 = Process(target=listener, args=(data,))  # 监听进程
+    p2 = Process(target=fire, args=(data,))  # 开火进程
     p1.start()
     p2.start()
     p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
-    p2.join()
