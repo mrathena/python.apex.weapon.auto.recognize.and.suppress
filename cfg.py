@@ -8,6 +8,7 @@ point = 'point'
 index = 'index'
 shake = 'shake'
 speed = 'speed'
+count = 'count'
 switch = 'switch'
 bullet = 'bullet'  # 子弹
 differ = 'differ'
@@ -112,7 +113,7 @@ weapon = {
             name: 'RE-45 自动手枪',  # 全程往右飘
             shake: {
                 speed: 80,
-                suppress: 10,
+                count: 10,
                 strength: 5,
             }
         },
@@ -120,7 +121,7 @@ weapon = {
             name: '转换者冲锋枪',
             shake: {
                 speed: 100,
-                suppress: 10,
+                count: 10,
                 strength: 7,
             }
         },
@@ -128,7 +129,7 @@ weapon = {
             name: 'R-301 卡宾枪',
             shake: {
                 speed: 74,  # 74ms打一发子弹
-                suppress: 6,  # 压制前6发
+                count: 6,  # 压制前6发
                 strength: 5,  # 压制的力度(下移的像素)
             },
             suppress: {
@@ -139,7 +140,7 @@ weapon = {
             name: 'R-99 冲锋枪',
             shake: {
                 speed: 55.5,
-                suppress: 13,
+                count: 13,
                 strength: 8,
             }
         },
@@ -150,7 +151,7 @@ weapon = {
             name: '喷火轻机枪',
             shake: {
                 speed: 111,
-                suppress: 8,
+                count: 8,
                 strength: 5,
             }
         },
@@ -161,7 +162,7 @@ weapon = {
             name: 'CAR (轻型弹药)',
             shake: {
                 speed: 64.5,
-                suppress: 10,
+                count: 10,
                 strength: 7,
             }
         }
@@ -171,7 +172,7 @@ weapon = {
             name: '赫姆洛克突击步枪',
             shake: {
                 speed: 50,
-                suppress: 3,
+                count: 3,
                 strength: 6,
             }
         },
@@ -179,7 +180,7 @@ weapon = {
             name: '猎兽冲锋枪',
             shake: {
                 speed: 50,
-                suppress: 5,
+                count: 5,
                 strength: 6,
             }
         },
@@ -187,7 +188,7 @@ weapon = {
             name: '平行步枪',
             shake: {
                 speed: 100,
-                suppress: 5,
+                count: 5,
                 strength: 5,
             }
         },
@@ -198,7 +199,7 @@ weapon = {
             name: 'CAR (重型弹药)',
             shake: {
                 speed: 64.5,
-                suppress: 10,
+                count: 10,
                 strength: 7,
             }
         }
@@ -208,7 +209,7 @@ weapon = {
             name: 'L-STAR能量机枪',
             shake: {
                 speed: 100,
-                suppress: 10,
+                count: 10,
                 strength: 5,
             }
         },
@@ -219,7 +220,7 @@ weapon = {
             name: '电能冲锋枪',
             shake: {
                 speed: 83.3,
-                suppress: 10,
+                count: 10,
                 strength: 7,
             }
         },
@@ -227,7 +228,7 @@ weapon = {
             name: '专注轻机枪',
             shake: {
                 speed: 100,
-                suppress: 10,
+                count: 10,
                 strength: 7,
             }
         },
@@ -235,7 +236,7 @@ weapon = {
             name: '哈沃克步枪',
             shake: {
                 speed: 100,
-                suppress: 8,
+                count: 8,
                 strength: 6,
             }
         },
@@ -279,7 +280,7 @@ weapon = {
             name: '暴走',
             shake: {
                 speed: 200,
-                suppress: 8,
+                count: 8,
                 strength: 2,
             }
         },

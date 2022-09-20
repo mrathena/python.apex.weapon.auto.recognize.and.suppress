@@ -11,6 +11,7 @@ end = 'end'
 fire = 'fire'
 shake = 'shake'
 speed = 'speed'
+count = 'count'
 switch = 'switch'
 strength = 'strength'
 init = {
@@ -79,7 +80,7 @@ def suppress(data):
                     break
                 # 下压
                 t = time.perf_counter_ns()
-                if total < data[shake][speed] * data[shake]['suppress']:
+                if total < data[shake][speed] * data[shake][count]:
                     toolkit.Mouse.move(0, data[shake][strength])
                     time.sleep(delay / 1000)
                     total += delay
