@@ -1,3 +1,5 @@
+import time
+
 import mss  # pip install mss
 import ctypes
 
@@ -182,9 +184,16 @@ class Game:
     @staticmethod
     def game():
         """
-        是否在游戏内
-        太耗时了, 所以不能调的多了
+        是否在游戏内(顶层窗口是游戏,且正在进行一局游戏,且游戏界面上有血条)
         """
+        # 先判断是否是游戏窗口
+        hwnd = user32.GetForegroundWindow()
+        length = user32.GetWindowTextLengthW(hwnd)
+        buffer = ctypes.create_unicode_buffer(length + 1)
+        user32.GetWindowTextW(hwnd, buffer, length + 1)
+        if 'Apex Legends' != buffer.value:
+            return False
+        # 是在游戏中, 再判断下是否有血条和生存物品包
         w, h = Monitor.Resolution.display()
         data = detect.get(f'{w}:{h}').get(cfg.game)
         for item in data:
@@ -253,6 +262,7 @@ class Game:
         """
         决策是否需要压枪, 向信号量写数据
         """
+        t = time.perf_counter_ns()
         if Game.game() is False:
             print('not in game')
 
@@ -272,5 +282,6 @@ class Game:
 
             return
         # 检测通过, 需要压枪
-        print(weapon.get(str(bullet)).get(str(arms)).get(cfg.name))
-        return weapon.get(str(bullet)).get(str(arms)).get(cfg.name)
+        t2 = time.perf_counter_ns()
+        print(f'耗时:{t2-t}ns, 约{(t2-t)//1000000}ms, {weapon.get(str(bullet)).get(str(arms)).get(cfg.name)}')
+

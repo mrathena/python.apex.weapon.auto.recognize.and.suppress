@@ -1,3 +1,4 @@
+import ctypes
 import datetime
 import time
 
@@ -8,6 +9,8 @@ import pynput  # conda install pynput
 from toolkit import Monitor, Game
 import cfg
 from cfg import detect
+user32 = ctypes.windll.user32
+import win32gui
 
 
 def onClick(x, y, button, pressed):
@@ -15,6 +18,7 @@ def onClick(x, y, button, pressed):
         if pynput.mouse.Button.x2 == button:
             return False
         if pynput.mouse.Button.x1 == button:
+            press
             # img = Monitor.grab([2944, 1377, 175, 30])
             # img = np.array(img)
             # img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
@@ -27,11 +31,12 @@ def onClick(x, y, button, pressed):
             # print(Game.index())
             # print(Game.mode())
             # print(Game.bullet())
-            index = Game.index()
-            bullet = Game.bullet()
-            print(Game.name(index, bullet))
+            # index = Game.index()
+            # bullet = Game.bullet()
+            # print(Game.name(index, bullet))
             # t2 = time.perf_counter_ns()
             # print((t2 - t1)//1000000)
+
 
 
 
