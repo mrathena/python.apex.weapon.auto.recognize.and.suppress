@@ -65,6 +65,7 @@ def listener(data):
 
 def suppress(data):
     while True:
+        time.sleep(0.001)
         if data[end]:
             break
         if data[switch] is False:
@@ -78,7 +79,7 @@ def suppress(data):
                     break
                 # 下压
                 if total < 150:
-                    toolkit.Mouse.move(0, 10)
+                    toolkit.Mouse.move(0, 5)
                     time.sleep(delay / 1000)
                     total += delay
                 else:
@@ -98,7 +99,6 @@ def suppress(data):
                 toolkit.Mouse.move(0, -pixel)
                 time.sleep(delay / 1000)
                 total += delay
-
 
 
 if __name__ == '__main__':
