@@ -10,7 +10,9 @@ import toolkit
 end = 'end'
 fire = 'fire'
 shake = 'shake'
+speed = 'speed'
 switch = 'switch'
+strength = 'strength'
 init = {
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
     switch: True,  # 开关
@@ -29,14 +31,12 @@ def listener(data):
                 toolkit.Game.detect(data)
         elif button == pynput.mouse.Button.left:
             data[fire] = pressed
-            print(time.perf_counter_ns())
 
     mouse = pynput.mouse.Listener(on_click=down)
     mouse.start()
 
     def release(key):
         if key == pynput.keyboard.Key.end:
-            print(data, end)
             # 结束程序
             data[end] = True
             return False
@@ -70,15 +70,17 @@ def suppress(data):
         if data[switch] is False:
             continue
         if data[fire] & (data[shake] is not None):
+            # 301 大约75ms一发子弹
             total = 0  # 总计时 ms
-            delay = 5  # 延迟 ms
+            delay = 1  # 延迟 ms
             pixel = 4  # 抖动像素
             while True:
                 if not data[fire]:
                     break
                 # 下压
-                if total < 150:
-                    toolkit.Mouse.move(0, 5)
+                t = time.perf_counter_ns()
+                if total < data[shake][speed] * data[shake]['suppress']:
+                    toolkit.Mouse.move(0, data[shake][strength])
                     time.sleep(delay / 1000)
                     total += delay
                 else:
@@ -92,6 +94,7 @@ def suppress(data):
                 toolkit.Mouse.move(-pixel, 0)
                 time.sleep(delay / 1000)
                 total += delay
+                total += (time.perf_counter_ns() - t) // 1000 // 1000
 
 
 if __name__ == '__main__':
