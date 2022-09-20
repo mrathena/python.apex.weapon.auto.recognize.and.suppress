@@ -5,6 +5,8 @@ import ctypes
 
 from ctypes import CDLL
 
+import win32gui
+
 import cfg
 from cfg import detect, weapon
 
@@ -139,7 +141,7 @@ class Monitor:
         可以通过 print(color == 0x00FFFFFF) 进行颜色判断
         """
         hdc = user32.GetDC(None)
-        return gdi32.GetPixel(hdc, x, y)
+        return win32gui.GetPixel(hdc, x, y)
 
     class Resolution:
         """
@@ -267,7 +269,7 @@ class Game:
         决策是否需要压枪, 向信号量写数据
         """
         if data[cfg.switch] is False:
-            print('gun press switch is off')
+            print('detect and suppress switch is off')
             return
         t1 = time.perf_counter_ns()
         if Game.game() is False:
