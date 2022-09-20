@@ -271,6 +271,20 @@ class Game:
         return None
 
     @staticmethod
+    def turbo(bullet, arms):
+        w, h = Monitor.Resolution.display()
+        data = detect.get(f'{w}:{h}').get(cfg.turbo)
+        color = data.get(cfg.color)
+        data = data.get(str(bullet))
+        if data is None:
+            return False
+        data = data.get(str(arms))
+        if data is None:
+            return False
+        x, y = data
+        return color == Monitor.pixel(x, y)
+
+    @staticmethod
     def detect(data):
         """
         决策是否需要压枪, 向信号量写数据
@@ -305,6 +319,8 @@ class Game:
         gun = weapon.get(str(bullet)).get(str(arms))
         data[cfg.shake] = gun.get(cfg.shake)  # 记录当前武器抖动参数
         data[cfg.restrain] = gun.get(cfg.restrain)  # 记录当前武器压制参数
+        # 检测涡轮
+        data[cfg.turbo] = Game.turbo(bullet, arms)
         t2 = time.perf_counter_ns()
-        print(f'耗时:{t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}')
+        print(f'耗时:{t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}{"(涡轮)" if data.get(cfg.turbo) else ""}')
 

@@ -11,6 +11,7 @@ fire = 'fire'
 shake = 'shake'
 speed = 'speed'
 count = 'count'
+turbo = 'turbo'
 switch = 'switch'
 restrain = 'restrain'
 strength = 'strength'
@@ -20,6 +21,7 @@ init = {
     fire: False,  # 开火状态
     shake: None,  # 抖枪参数
     restrain: None,  # 压枪参数
+    turbo: False,  # 是否有涡轮, 哈沃克/专注
 }
 
 
@@ -72,6 +74,7 @@ def suppress(data):
         if data.get(switch) is False:
             continue
         if Game.game() & data.get(fire):
+            print(data[turbo])
             if data.get(restrain) is not None:
                 for item in data.get(restrain):
                     if not data.get(fire):
