@@ -69,14 +69,24 @@ def suppress(data):
             continue
         if data[fire] & (data[shake] is not None):
             while True:
+                total = 0  # 总计时 ms
+                delay = 10  # 延迟 ms
                 if not data[fire]:
                     break
-                toolkit.Mouse.move(4, 0)
-                time.sleep(0.01)
+                # 抖枪
                 toolkit.Mouse.move(-4, 0)
-                time.sleep(0.01)
-                toolkit.Mouse.move(0, 5)
-                time.sleep(0.01)
+                time.sleep(total / 1000)
+                total += delay
+                toolkit.Mouse.move(4, 0)
+                time.sleep(total / 1000)
+                total += delay
+                # 下压
+                if total < 400:
+                    toolkit.Mouse.move(0, 8)
+                else:
+                    toolkit.Mouse.move(0, 1)
+                time.sleep(total / 1000)
+                total += delay
 
 
 if __name__ == '__main__':
