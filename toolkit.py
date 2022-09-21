@@ -272,17 +272,23 @@ class Game:
 
     @staticmethod
     def turbo(bullet, arms):
+        """
+        判断是否有涡轮, 只有配置了检测涡轮的武器才会做取色判断
+        :return: (False, None), (True, differ), 有涡轮的话, 额外返回涡轮索引偏移
+        """
         w, h = Monitor.Resolution.display()
         data = detect.get(f'{w}:{h}').get(cfg.turbo)
+        differ = data.get(cfg.differ)
         color = data.get(cfg.color)
         data = data.get(str(bullet))
         if data is None:
-            return False
+            return False, None
         data = data.get(str(arms))
         if data is None:
-            return False
+            return False, None
         x, y = data
-        return color == Monitor.pixel(x, y)
+        result = color == Monitor.pixel(x, y)
+        return (True, differ) if result else (False, None)
 
     @staticmethod
     def detect(data):
@@ -297,39 +303,35 @@ class Game:
             print('不在游戏中')
             data[cfg.shake] = None
             data[cfg.restrain] = None
-            data[cfg.turbo] = None
             return
         if Game.play() is False:
             print('不在游戏中')
             data[cfg.shake] = None
             data[cfg.restrain] = None
-            data[cfg.turbo] = None
             return
         index, bullet = Game.index()
         if (index is None) | (bullet is None):
             print('没有武器')
             data[cfg.shake] = None
             data[cfg.restrain] = None
-            data[cfg.turbo] = None
             return
         if Game.mode() is None:
             print('不是自动/半自动武器')
             data[cfg.shake] = None
             data[cfg.restrain] = None
-            data[cfg.turbo] = None
             return
         arms = Game.weapon(index, bullet)
         if arms is None:
             print('识别武器失败')
             data[cfg.shake] = None
             data[cfg.restrain] = None
-            data[cfg.turbo] = None
             return
         # 检测通过, 需要压枪
-        gun = weapon.get(str(bullet)).get(str(arms))
+        # 先判断下涡轮
+        result, differ = Game.turbo(bullet, arms)
+        # 拿对应参数
+        gun = weapon.get(str(bullet)).get(str((arms + differ) if result else arms))
         data[cfg.shake] = gun.get(cfg.shake)  # 记录当前武器抖动参数
         data[cfg.restrain] = gun.get(cfg.restrain)  # 记录当前武器压制参数
-        # 检测涡轮
-        data[cfg.turbo] = Game.turbo(bullet, arms)
         t2 = time.perf_counter_ns()
-        print(f'耗时: {t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}{" (涡轮)" if data.get(cfg.turbo) else ""}')
+        print(f'耗时: {t2-t1}ns, 约{(t2-t1)//1000000}ms, {gun.get(cfg.name)}')
