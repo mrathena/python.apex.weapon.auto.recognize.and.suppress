@@ -35,6 +35,7 @@ def listener(data):
                 Game.detect(data)
         elif button == pynput.mouse.Button.left:
             data[fire] = pressed
+            print(time.perf_counter_ns())
 
     mouse = pynput.mouse.Listener(on_click=down)
     mouse.start()
