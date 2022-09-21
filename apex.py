@@ -51,6 +51,8 @@ def listener(data):
             Game.detect(data)
         elif key == pynput.keyboard.Key.tab:
             Game.detect(data)
+        elif key == pynput.keyboard.Key.alt_l:
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('1'):
             Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('2'):
