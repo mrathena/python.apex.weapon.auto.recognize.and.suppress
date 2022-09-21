@@ -12,11 +12,13 @@ shake = 'shake'
 speed = 'speed'
 count = 'count'
 switch = 'switch'
+restart = 'restart'
 restrain = 'restrain'
 strength = 'strength'
 init = {
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
-    switch: True,  # 开关
+    restart: False,  # 重启压制进程标记, 感觉卡顿时重启
+    switch: True,  # 检测和压枪开关
     fire: False,  # 开火状态
     shake: None,  # 抖枪参数
     restrain: None,  # 压枪参数
@@ -42,6 +44,10 @@ def listener(data):
             # 结束程序
             data[end] = True
             return False
+        elif key == pynput.keyboard.Key.page_down:
+            # 重启压枪进程
+            data[restart] = True
+            # restart(data)
         elif key == pynput.keyboard.Key.home:
             # 压枪开关
             data[switch] = not data.get(switch)
@@ -70,6 +76,9 @@ def listener(data):
 def suppress(data):
     while True:
         if data.get(end):
+            break
+        if data.get(restart):
+            print('process suppress end')
             break
         if data.get(switch) is False:
             continue
@@ -108,6 +117,13 @@ def suppress(data):
                     total += (time.perf_counter_ns() - t) // 1000 // 1000
 
 
+def restart(data):
+    data[restart] = False
+    process = Process(target=suppress, args=(data,))  # 压枪进程
+    process.start()
+    print('process suppress start')
+
+
 if __name__ == '__main__':
     multiprocessing.freeze_support()  # windows 平台使用 multiprocessing 必须在 main 中第一行写这个
     manager = multiprocessing.Manager()
@@ -115,7 +131,7 @@ if __name__ == '__main__':
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
     p1 = Process(target=listener, args=(data,))  # 监听进程
-    p2 = Process(target=suppress, args=(data,))  # 压枪进程
     p1.start()
-    p2.start()
+    # 启动压制进程
+    restart(data)
     p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
