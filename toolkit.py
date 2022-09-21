@@ -296,24 +296,34 @@ class Game:
         if Game.game() is False:
             print('不在游戏中')
             data[cfg.shake] = None
+            data[cfg.restrain] = None
+            data[cfg.turbo] = None
             return
         if Game.play() is False:
             print('不在游戏中')
             data[cfg.shake] = None
+            data[cfg.restrain] = None
+            data[cfg.turbo] = None
             return
         index, bullet = Game.index()
         if (index is None) | (bullet is None):
             print('没有武器')
             data[cfg.shake] = None
+            data[cfg.restrain] = None
+            data[cfg.turbo] = None
             return
         if Game.mode() is None:
             print('不是自动/半自动武器')
             data[cfg.shake] = None
+            data[cfg.restrain] = None
+            data[cfg.turbo] = None
             return
         arms = Game.weapon(index, bullet)
         if arms is None:
             print('识别武器失败')
             data[cfg.shake] = None
+            data[cfg.restrain] = None
+            data[cfg.turbo] = None
             return
         # 检测通过, 需要压枪
         gun = weapon.get(str(bullet)).get(str(arms))
