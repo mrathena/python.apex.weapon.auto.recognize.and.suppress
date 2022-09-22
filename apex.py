@@ -74,16 +74,15 @@ def listener(data):
 
 
 def suppress(data):
+    data[restart] = False
     while True:
         if data.get(end):
             break
         if data.get(restart):
-            print('process suppress end')
             break
         if data.get(switch) is False:
             continue
-        if Game.game() & data.get(fire):
-
+        if Game.game() & Game.armed() & data.get(fire):
             if data.get(restrain) is not None:
                 for item in data.get(restrain):
                     if not data.get(fire):
@@ -117,21 +116,14 @@ def suppress(data):
                     total += (time.perf_counter_ns() - t) // 1000 // 1000
 
 
-def restart(data):
-    data[restart] = False
-    process = Process(target=suppress, args=(data,))  # 压枪进程
-    process.start()
-    print('process suppress start')
-
-
 if __name__ == '__main__':
     multiprocessing.freeze_support()  # windows 平台使用 multiprocessing 必须在 main 中第一行写这个
     manager = multiprocessing.Manager()
     data = manager.dict()  # 创建进程安全的共享变量
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
-    p1 = Process(target=listener, args=(data,))  # 监听进程
+    p1 = Process(daemon=True, target=listener, args=(data,))  # 监听进程
     p1.start()
-    # 启动压制进程
-    restart(data)
+    p2 = Process(target=suppress, args=(data,))  # 压枪进程
+    p2.start()
     p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束

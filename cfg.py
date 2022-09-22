@@ -9,10 +9,12 @@ index = 'index'
 shake = 'shake'
 speed = 'speed'
 count = 'count'
+armed = 'armed'
 switch = 'switch'
 bullet = 'bullet'  # 子弹
 differ = 'differ'
 turbo = 'turbo'
+trigger = 'trigger'
 restrain = 'restrain'
 strength = 'strength'
 positive = 'positive'  # 肯定的
@@ -45,6 +47,9 @@ detect = {
             color: 0x00FFFFFF,
             '1': (3151, 1347),  # 全自动
             '2': (3171, 1351),  # 半自动
+        },
+        armed: {  # 是否持有武器(比如有武器但用拳头就是未持有武器)
+
         },
         name: {  # 武器名称判断
             color: 0x00FFFFFF,
@@ -98,10 +103,21 @@ detect = {
         },
         turbo: {  # 涡轮
             color: 0x00FFFFFF,
-            differ: 2,  # 有涡轮和没涡轮的索引偏移
             '3': {
+                differ: 2,  # 有涡轮和没涡轮的索引偏移
                 '4': (3072, 1358),  # 专注轻机枪 涡轮检测位置
                 '5': (3034, 1358),  # 哈沃克步枪 涡轮检测位置
+            }
+        },
+        trigger: {  # 双发扳机
+            color: 0x00FFFFFF,
+            '1': {
+                differ: 2,
+                '7': (3072, 1358),  # G7 侦查枪 双发扳机检测位置
+            },
+            '5': {
+                differ: 1,
+                '3': (3034, 1358),  # EVA-8 双发扳机检测位置
             }
         }
     },
@@ -265,7 +281,13 @@ weapon = {
                 [58, 0, 3],  #
                 [58, 0, 3],
             ]
-        }
+        },
+        '9': {
+            name: 'G7 侦查枪 (双发扳机)',
+            restrain: [
+                [20, 0, 5]
+            ]
+        },
     },
     '2': {  # 重型弹药武器
         '1': {
@@ -519,6 +541,9 @@ weapon = {
         '3': {
             name: 'EVA-8',
         },
+        '4': {
+            name: 'EVA-8 (双发扳机)',
+        }
     },
     '6': {  # 空投武器
         '1': {
