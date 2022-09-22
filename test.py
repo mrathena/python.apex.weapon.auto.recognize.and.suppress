@@ -1,77 +1,64 @@
 import ctypes
-import datetime
-import time
+from ctypes import wintypes
 
-import cv2  # conda install cv2
-import numpy as np
-import pynput  # conda install pynput
-
-from toolkit import Monitor, Game
-import cfg
-from cfg import detect
-user32 = ctypes.windll.user32
+import win32con
 import win32gui
 
-
-def onClick(x, y, button, pressed):
-    if not pressed:
-        if pynput.mouse.Button.x2 == button:
-            return False
-        if pynput.mouse.Button.x1 == button:
-            press
-            # img = Monitor.grab([2944, 1377, 175, 30])
-            # img = np.array(img)
-            # img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-            # now = datetime.datetime.now()
-            # cv2.imwrite(f'C:\\Users\\mrathena\\Desktop\\{now.strftime("%Y%m%d %H%M%S.png")}', img, [int(cv2.IMWRITE_PNG_COMPRESSION), 0])
-
-            # t1 = time.perf_counter_ns()
-            # print(hex(Monitor.pixel(2900, 1372)))
-            # print(Game.game())
-            # print(Game.index())
-            # print(Game.mode())
-            # print(Game.bullet())
-            # index = Game.index()
-            # bullet = Game.bullet()
-            # print(Game.name(index, bullet))
-            # t2 = time.perf_counter_ns()
-            # print((t2 - t1)//1000000)
+class BITMAPINFOHEADER(ctypes.Structure):
+    _fields_ = [
+        ("biSize", wintypes.DWORD),
+        ("biWidth", ctypes.c_long),
+        ("biHeight", ctypes.c_long),
+        ("biPlanes", wintypes.WORD),
+        ("biBitCount", wintypes.WORD),
+        ("biCompression", wintypes.DWORD),
+        ("biSizeImage", wintypes.DWORD),
+        ("biXPelsPerMeter", ctypes.c_long),
+        ("biYPelsPerMeter", ctypes.c_long),
+        ("biClrUsed", wintypes.DWORD),
+        ("biClrImportant", wintypes.DWORD)
+    ]
 
 
+class BITMAPINFO(ctypes.Structure):
+    _fields_ = [
+        ("bmiHeader", BITMAPINFOHEADER)
+    ]
 
 
+user32 = ctypes.windll.user32
+gdi32 = ctypes.windll.gdi32
 
-mouseListener = pynput.mouse.Listener(on_click=onClick)
-mouseListener.start()
-mouseListener.join()
+w, h = 3440, 1440
 
-data = [
-    [0, 0, 100],  #
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],  #
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],  #
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],  #
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],  #
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],
-    [0, 0, 100],  #
-    [0, 0, 100],
-    [0, 0, 100],
-]
+hwndDC = user32.GetDC(None)
+saveDC = gdi32.CreateCompatibleDC(hwndDC)
+# Get bitmap
+bmp = gdi32.CreateCompatibleBitmap(hwndDC, w, h)
+gdi32.SelectObject(saveDC, bmp)
+
+# Init bitmap info
+# We grab the image in RGBX mode, so that each word is 32bit and
+# we have no striding, then we transform to RGB
+buffer_len = h * w * 4
+bmi = BITMAPINFO()
+bmi.bmiHeader.biSize = ctypes.sizeof(BITMAPINFOHEADER)
+bmi.bmiHeader.biWidth = w
+bmi.bmiHeader.biHeight = -h  # Why minus? See [1]
+bmi.bmiHeader.biPlanes = 1  # Always 1
+bmi.bmiHeader.biBitCount = 32
+bmi.bmiHeader.biCompression = 0
+# Blit
+image = ctypes.create_string_buffer(buffer_len)
+bits = gdi32.GetDIBits(saveDC, bmp, 0, h, image, bmi, 0)
+assert bits == h
+# Replace pixels values: BGRX to RGB
+image2 = ctypes.create_string_buffer(h * w * 3)
+image2[0::3] = image[2::4]
+image2[1::3] = image[1::4]
+image2[2::3] = image[0::4]
+
+img = bytes(image)
+print(type(img), len(img))
+for i in range(60):
+    print(img[i])
