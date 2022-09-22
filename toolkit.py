@@ -345,12 +345,12 @@ class Game:
             t2 = time.perf_counter_ns()
             print(f'耗时: {t2 - t1}ns, 约{(t2 - t1) // 1000000}ms, 没有武器')
             return
-        if Game.mode() is None:
-            data[cfg.shake] = None
-            data[cfg.restrain] = None
-            t2 = time.perf_counter_ns()
-            print(f'耗时: {t2 - t1}ns, 约{(t2 - t1) // 1000000}ms, 不是自动/半自动武器')
-            return
+        # if Game.mode() is None:
+        #     data[cfg.shake] = None
+        #     data[cfg.restrain] = None
+        #     t2 = time.perf_counter_ns()
+        #     print(f'耗时: {t2 - t1}ns, 约{(t2 - t1) // 1000000}ms, 不是自动/半自动武器')
+        #     return
         wi = Game.weapon(pi, bi)
         if wi is None:
             data[cfg.shake] = None

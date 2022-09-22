@@ -87,7 +87,7 @@ def suppress(data):
                 for item in data.get(restrain):
                     if not data.get(fire):
                         break
-                    delay, x, y = item
+                    x, y, delay = item
                     Mouse.move(x, y)
                     time.sleep(delay / 1000)
             elif data.get(shake) is not None:
