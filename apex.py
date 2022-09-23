@@ -76,6 +76,7 @@ def listener(data):
 def suppress(data):
     data[restart] = False
     while True:
+        time.sleep(0.001)
         if data.get(end):
             break
         if data.get(restart):
