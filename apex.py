@@ -74,15 +74,6 @@ def keyboard(data):
         k.join()
 
 
-def listener(data):
-    t1 = Thread(target=mouse, args=(data,))
-    t2 = Thread(target=keyboard, args=(data,))
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
-
-
 def suppress(data):
     data[restart] = False
     while True:
@@ -153,9 +144,12 @@ if __name__ == '__main__':
     data = manager.dict()  # 创建进程安全的共享变量
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
-    p1 = Process(target=listener, args=(data,))  # 监听进程
-    p2 = Process(target=suppress, args=(data,))  # 压枪进程
+    p1 = Process(target=mouse, args=(data,))  # 监听进程
+    p2 = Process(target=keyboard, args=(data,))
+    p3 = Process(target=suppress, args=(data,))  # 压枪进程
     p1.start()
     p2.start()
-    p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
-    # p2.join()
+    p3.start()
+    # p1.join()
+    p2.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
+    p1.terminate()  # 因为鼠标进程在 end 按下后无法响应结束, 所以直接强制停止
