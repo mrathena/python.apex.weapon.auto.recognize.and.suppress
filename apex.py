@@ -65,6 +65,8 @@ def listener(data):
             Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('e'):
             Game.detect(data)
+        elif key == pynput.keyboard.KeyCode.from_char('r'):
+            Game.detect(data)
         elif key == pynput.keyboard.KeyCode.from_char('v'):
             Game.detect(data)
 
@@ -76,7 +78,7 @@ def listener(data):
 def suppress(data):
     data[restart] = False
     while True:
-        time.sleep(0.010)
+        time.sleep(0.01)
         if data.get(end):
             break
         if data.get(restart):
@@ -88,9 +90,16 @@ def suppress(data):
                 for item in data.get(restrain):
                     if not data.get(fire):
                         break
-                    x, y, delay = item
-                    Mouse.move(x, y)
-                    time.sleep(delay / 1000)
+                    # operation: # 1:移动 2:按下
+                    operation = item[0]
+                    if operation == 1:
+                        temp, x, y, delay = item
+                        Mouse.move(x, y)
+                        time.sleep(delay / 1000)
+                    elif operation == 2:
+                        temp, code, delay = item
+                        Mouse.click(code)
+                        time.sleep(delay / 1000)
             elif data.get(shake) is not None:
                 total = 0  # 总计时 ms
                 delay = 1  # 延迟 ms
@@ -128,3 +137,4 @@ if __name__ == '__main__':
     p2 = Process(target=suppress, args=(data,))  # 压枪进程
     p2.start()
     p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
+    p2.join()
