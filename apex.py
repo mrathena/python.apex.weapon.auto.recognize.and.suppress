@@ -153,8 +153,8 @@ if __name__ == '__main__':
     data = manager.dict()  # 创建进程安全的共享变量
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
-    p1 = Process(daemon=True, target=listener, args=(data,))  # 监听进程
-    p2 = Process(daemon=True, target=suppress, args=(data,))  # 压枪进程
+    p1 = Process(target=listener, args=(data,))  # 监听进程
+    p2 = Process(target=suppress, args=(data,))  # 压枪进程
     p1.start()
     p2.start()
     p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
