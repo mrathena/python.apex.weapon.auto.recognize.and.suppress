@@ -85,27 +85,41 @@ def suppress(data):
             break
         if data.get(switch) is False:
             continue
-        if Game.game() & Game.armed() & data.get(fire):
+        if data.get(fire):
             if data.get(restrain) is not None:
                 for item in data.get(restrain):
-                    if not data.get(fire):
+                    if not data.get(fire):  # 停止开火
                         break
+                    t1 = time.perf_counter_ns()
+                    if not Game.game():  # 不在游戏中
+                        break
+                    if not Game.armed():  # 未持有武器
+                        break
+                    if Game.empty():  # 弹夹为空
+                        break
+                    t2 = time.perf_counter_ns()
                     # operation: # 1:移动 2:按下
                     operation = item[0]
                     if operation == 1:
                         temp, x, y, delay = item
                         Mouse.move(x, y)
-                        time.sleep(delay / 1000)
+                        time.sleep((delay - (t2 - t1) // 1000 // 1000) / 1000)
                     elif operation == 2:
                         temp, code, delay = item
                         Mouse.click(code)
-                        time.sleep(delay / 1000)
+                        time.sleep((delay - (t2 - t1) // 1000 // 1000) / 1000)
             elif data.get(shake) is not None:
                 total = 0  # 总计时 ms
                 delay = 1  # 延迟 ms
                 pixel = 4  # 抖动像素
                 while True:
-                    if not data[fire]:
+                    if not data[fire]:  # 停止开火
+                        break
+                    if not Game.game():  # 不在游戏中
+                        break
+                    if not Game.armed():  # 未持有武器
+                        break
+                    if Game.empty():  # 弹夹为空
                         break
                     t = time.perf_counter_ns()
                     if total < data[shake][speed] * data[shake][count]:

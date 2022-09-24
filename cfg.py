@@ -10,6 +10,7 @@ shake = 'shake'
 speed = 'speed'
 count = 'count'
 armed = 'armed'
+empty = 'empty'
 switch = 'switch'
 bullet = 'bullet'  # 子弹
 differ = 'differ'
@@ -50,6 +51,11 @@ detect = {
         },
         armed: {  # 是否持有武器(比如有武器但用拳头就是未持有武器)
 
+        },
+        empty: {  # 是否空弹夹(武器里子弹数为0)
+            color: 0x00FFFFFF,
+            '1': (3204, 1306),  # 十位数, 该点白色即非0, 非0则一定不空
+            '2': (3229, 1294),  # 个位数, 该点白色即为0, 十位为0且个位为0为空
         },
         name: {  # 武器名称判断
             color: 0x00FFFFFF,

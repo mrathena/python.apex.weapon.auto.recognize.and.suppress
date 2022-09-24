@@ -279,6 +279,19 @@ class Game:
         return True
 
     @staticmethod
+    def empty():
+        """
+        是否空弹夹
+        """
+        data = detect.get(Game.key()).get(cfg.empty)
+        color = data.get(cfg.color)
+        x, y = data.get('1')
+        if color == Monitor.pixel(x, y):
+            return False
+        x, y = data.get('2')
+        return color == Monitor.pixel(x, y)
+
+    @staticmethod
     def turbo(bi, wi):
         """
         判断是否有涡轮, 只有配置了检测涡轮的武器才会做取色判断
