@@ -150,6 +150,5 @@ if __name__ == '__main__':
     p1.start()
     p2.start()
     p3.start()
-    # p1.join()
     p2.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
-    p1.terminate()  # 因为鼠标进程在 end 按下后无法响应结束, 所以直接强制停止
+    p1.terminate()  # 因为鼠标监听进程在 end 按下后无法响应结束, 所以直接强制停止
