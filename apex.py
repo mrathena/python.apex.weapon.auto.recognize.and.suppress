@@ -1,7 +1,6 @@
 import multiprocessing
 import time
 from multiprocessing import Process
-from threading import Thread
 
 import pynput  # conda install pynput
 
@@ -25,7 +24,7 @@ init = {
 }
 
 
-def mouse(data):
+def listener(data):
 
     def down(x, y, button, pressed):
         if data.get(end):
@@ -36,14 +35,10 @@ def mouse(data):
         elif button == pynput.mouse.Button.left:
             data[fire] = pressed
 
-    with pynput.mouse.Listener(on_click=down) as m:
-        m.join()  # 为什么 with as 可以不用写 start
-
-
-def keyboard(data):
+    mouse = pynput.mouse.Listener(on_click=down)
+    mouse.start()
 
     def release(key):
-        nonlocal data
         if key == pynput.keyboard.Key.end:
             # 结束程序
             data[end] = True
@@ -70,12 +65,12 @@ def keyboard(data):
         elif key == pynput.keyboard.KeyCode.from_char('v'):
             Game.detect(data)
 
-    with pynput.keyboard.Listener(on_release=release) as k:
-        k.join()
+    keyboard = pynput.keyboard.Listener(on_release=release)
+    keyboard.start()
+    keyboard.join()  # 卡住监听进程, 当键盘线程结束后, 监听进程才能结束
 
 
 def suppress(data):
-    data[restart] = False
     while True:
         if data.get(end):
             break
@@ -144,11 +139,8 @@ if __name__ == '__main__':
     data = manager.dict()  # 创建进程安全的共享变量
     data.update(init)  # 将初始数据导入到共享变量
     # 将键鼠监听和压枪放到单独进程中跑
-    p1 = Process(target=mouse, args=(data,))  # 监听进程
-    p2 = Process(target=keyboard, args=(data,))
-    p3 = Process(target=suppress, args=(data,))  # 压枪进程
+    p1 = Process(daemon=True, target=listener, args=(data,))  # 监听进程
+    p2 = Process(target=suppress, args=(data,))  # 压枪进程
     p1.start()
     p2.start()
-    p3.start()
-    p2.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
-    p1.terminate()  # 因为鼠标监听进程在 end 按下后无法响应结束, 所以直接强制停止
+    p1.join()  # 卡住主进程, 当进程 listener 结束后, 主进程才会结束
