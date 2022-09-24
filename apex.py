@@ -74,8 +74,6 @@ def suppress(data):
     while True:
         if data.get(end):
             break
-        if data.get(restart):
-            break
         if data.get(switch) is False:
             continue
         if data.get(fire):
