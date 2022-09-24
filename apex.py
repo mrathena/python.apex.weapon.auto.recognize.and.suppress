@@ -44,10 +44,6 @@ def listener(data):
             # 结束程序
             data[end] = True
             return False
-        elif key == pynput.keyboard.Key.page_down:
-            # 重启压枪进程
-            data[restart] = True
-            # restart(data)
         elif key == pynput.keyboard.Key.home:
             # 压枪开关
             data[switch] = not data.get(switch)
