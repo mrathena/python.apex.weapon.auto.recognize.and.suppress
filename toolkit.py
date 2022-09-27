@@ -141,7 +141,9 @@ class Monitor:
         可以通过 print(color == 0x00FFFFFF) 进行颜色判断
         """
         hdc = user32.GetDC(None)
-        return gdi32.GetPixel(hdc, x, y)
+        color = gdi32.GetPixel(hdc, x, y)
+        user32.ReleaseDC(None, hdc)  # 一定要释放DC, 不然随着该函数调用次数增加会越来越卡, 表现就是不调用该函数, 系统会每两秒卡一下, 调用次数越多, 卡的程度越厉害
+        return color
 
     class Resolution:
         """
