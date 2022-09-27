@@ -176,6 +176,7 @@ class Monitor:
             hdc = user32.GetDC(None)
             w = gdi32.GetDeviceCaps(hdc, 118)
             h = gdi32.GetDeviceCaps(hdc, 117)
+            user32.ReleaseDC(None, hdc)
             return w, h
 
 
