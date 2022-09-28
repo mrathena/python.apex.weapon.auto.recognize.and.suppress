@@ -15,6 +15,14 @@ bmp = win32gui.GetObject(hbmp)
 print(bmp)
 print(type(bmp))
 
+print(bmp.bmType)
+print(bmp.bmWidth)
+print(bmp.bmHeight)
+print(bmp.bmWidthBytes)
+print(bmp.bmPlanes)
+print(bmp.bmBitsPixel)
+print(bmp.bmBits)
+
 # https://blog.csdn.net/alphabuilder/article/details/7555063
 # http://timgolden.me.uk/pywin32-docs/win32gui__GetCurrentObject_meth.html
 # http://timgolden.me.uk/pywin32-docs/win32gui__GetObject_meth.html
