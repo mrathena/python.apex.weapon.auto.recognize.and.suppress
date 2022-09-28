@@ -13,6 +13,7 @@ hdc = user32.GetDC(None)
 hbmp = win32gui.GetCurrentObject(hdc, win32con.OBJ_BITMAP)
 bmp = win32gui.GetObject(hbmp)
 print(bmp)
+print(type(bmp))
 
 # https://blog.csdn.net/alphabuilder/article/details/7555063
 # http://timgolden.me.uk/pywin32-docs/win32gui__GetCurrentObject_meth.html
