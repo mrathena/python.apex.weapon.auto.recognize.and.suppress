@@ -146,5 +146,5 @@ if __name__ == '__main__':
     pm.start()
     pk.start()
     ps.start()
-    pk.join()
+    pk.join()  # 不写 join 的话, 使用 dict 的地方就会报错 conn = self._tls.connection, AttributeError: 'ForkAwareLocal' object has no attribute 'connection'
     pm.terminate()  # 鼠标进程无法主动监听到终止信号, 所以需强制结束
