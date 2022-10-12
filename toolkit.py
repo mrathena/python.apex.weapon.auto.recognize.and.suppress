@@ -1,75 +1,36 @@
+import ctypes
 import time
 
-import mss  # pip install mss
-import ctypes
-
-from ctypes import CDLL
+from win32api import GetSystemMetrics
+from win32con import SM_CXSCREEN, SM_CYSCREEN, SM_CXVIRTUALSCREEN, SM_CYVIRTUALSCREEN, DESKTOPHORZRES, DESKTOPVERTRES
+from win32print import GetDeviceCaps
+from win32gui import GetCursorPos, GetDC, ReleaseDC, GetPixel, GetWindowText, GetForegroundWindow  # conda install pywin32,
 
 import cfg
 from cfg import detect, weapon
 
-# 全局 dll
-user32 = ctypes.windll.user32
-gdi32 = ctypes.windll.gdi32
-
 try:
-    driver = CDLL(r'mouse.device.lgs.dll')  # 在Python的string前面加上‘r’, 是为了告诉编译器这个string是个raw string(原始字符串),不要转义backslash(反斜杠) '\'
+    driver = ctypes.CDLL(r'mouse.device.lgs.dll')  # 在Python的string前面加上‘r’, 是为了告诉编译器这个string是个raw string(原始字符串),不要转义backslash(反斜杠) '\'
     ok = driver.device_open() == 1
     if not ok:
-        print('初始化失败, 未安装lgs/ghub驱动')
+        print('初始化罗技驱动失败, 未安装lgs/ghub驱动')
 except FileNotFoundError:
-    print('初始化失败, 缺少文件')
+    print('初始化罗技驱动失败, 缺少文件')
 
 
 class Mouse:
 
     @staticmethod
-    def point():
-        return user32.GetCursorPos()
-
-    @staticmethod
     def move(x, y, absolute=False):
         if ok:
-            if (x == 0) & (y == 0):
+            if x == 0 and y == 0:
                 return
             mx, my = x, y
             if absolute:
-                ox, oy = user32.GetCursorPos()
+                ox, oy = GetCursorPos()
                 mx = x - ox
                 my = y - oy
             driver.moveR(mx, my, True)
-
-    @staticmethod
-    def moveHumanoid(x, y, absolute=False):
-        """
-        仿真移动(还没做好)
-        """
-        if ok:
-            ox, oy = user32.GetCursorPos()  # 原鼠标位置
-            mx, my = x, y  # 相对移动距离
-            if absolute:
-                mx = x - ox
-                my = y - oy
-            tx, ty = ox + mx, oy + my
-            print(f'({ox},{oy}), ({tx},{ty}), x:{mx},y:{my}')
-            # 以绝对位置方式移动(防止相对位置丢失精度)
-            adx, ady = abs(mx), abs(my)
-            if adx <= ady:
-                # 水平方向移动的距离短
-                for i in range(1, adx):
-                    ix = i if mx > 0 else -i
-                    temp = int(ady / adx * abs(ix))
-                    iy = temp if my > 0 else -temp
-                    Mouse.move(ox + ix, oy + iy, absolute=True)
-                    # time.sleep(0.001)
-            else:
-                # 垂直方向移动的距离短
-                for i in range(1, ady):
-                    iy = i if my > 0 else -i
-                    temp = int(adx / ady * abs(iy))
-                    ix = temp if mx > 0 else -temp
-                    Mouse.move(ox + ix, oy + iy, absolute=True)
-                    # time.sleep(0.001)
 
     @staticmethod
     def down(code):
@@ -120,16 +81,6 @@ class Monitor:
     """
     显示器
     """
-    sct = mss.mss()
-
-    @staticmethod
-    def grab(region):
-        """
-        region: tuple, (left, top, width, height)
-        pip install mss
-        """
-        left, top, width, height = region
-        return Monitor.sct.grab(monitor={'left': left, 'top': top, 'width': width, 'height': height})
 
     @staticmethod
     def pixel(x, y):
@@ -140,9 +91,9 @@ class Monitor:
         可以通过 print(hex(color)) 查看十六进制值
         可以通过 print(color == 0x00FFFFFF) 进行颜色判断
         """
-        hdc = user32.GetDC(None)
-        color = gdi32.GetPixel(hdc, x, y)
-        user32.ReleaseDC(None, hdc)  # 一定要释放DC, 不然随着该函数调用次数增加会越来越卡, 表现就是不调用该函数, 系统会每两秒卡一下, 调用次数越多, 卡的程度越厉害
+        hdc = GetDC(None)
+        color = GetPixel(hdc, x, y)
+        ReleaseDC(None, hdc)  # 一定要释放DC, 不然随着该函数调用次数增加会越来越卡, 表现就是不调用该函数, 系统会每两秒卡一下, 调用次数越多, 卡的程度越厉害
         return color
 
     class Resolution:
@@ -155,8 +106,8 @@ class Monitor:
             """
             显示分辨率
             """
-            w = user32.GetSystemMetrics(0)
-            h = user32.GetSystemMetrics(1)
+            w = GetSystemMetrics(SM_CXSCREEN)
+            h = GetSystemMetrics(SM_CYSCREEN)
             return w, h
 
         @staticmethod
@@ -164,8 +115,8 @@ class Monitor:
             """
             多屏幕组合的虚拟显示器分辨率
             """
-            w = user32.GetSystemMetrics(78)
-            h = user32.GetSystemMetrics(79)
+            w = GetSystemMetrics(SM_CXVIRTUALSCREEN)
+            h = GetSystemMetrics(SM_CYVIRTUALSCREEN)
             return w, h
 
         @staticmethod
@@ -173,10 +124,10 @@ class Monitor:
             """
             物理分辨率
             """
-            hdc = user32.GetDC(None)
-            w = gdi32.GetDeviceCaps(hdc, 118)
-            h = gdi32.GetDeviceCaps(hdc, 117)
-            user32.ReleaseDC(None, hdc)
+            hdc = GetDC(None)
+            w = GetDeviceCaps(hdc, DESKTOPHORZRES)
+            h = GetDeviceCaps(hdc, DESKTOPVERTRES)
+            ReleaseDC(None, hdc)
             return w, h
 
 
@@ -195,14 +146,7 @@ class Game:
         """
         是否游戏窗体在最前
         """
-        # 先判断是否是游戏窗口
-        hwnd = user32.GetForegroundWindow()
-        length = user32.GetWindowTextLengthW(hwnd)
-        buffer = ctypes.create_unicode_buffer(length + 1)
-        user32.GetWindowTextW(hwnd, buffer, length + 1)
-        if 'Apex Legends' != buffer.value:
-            return False
-        return True
+        return 'Apex Legends' == GetWindowText(GetForegroundWindow())
 
     @staticmethod
     def play():
