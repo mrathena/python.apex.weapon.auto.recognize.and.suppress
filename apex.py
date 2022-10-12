@@ -97,11 +97,15 @@ def suppress(data):
                     if operation == 1:
                         temp, x, y, delay = item
                         Mouse.move(x, y)
-                        time.sleep((delay - (t2 - t1) // 1000 // 1000) / 1000)
+                        delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
+                        if delay > 0:
+                            time.sleep(delay)
                     elif operation == 2:
                         temp, code, delay = item
                         Mouse.click(code)
-                        time.sleep((delay - (t2 - t1) // 1000 // 1000) / 1000)
+                        delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
+                        if delay > 0:
+                            time.sleep(delay)
             elif data.get(shake) is not None:
                 total = 0  # 总计时 ms
                 delay = 1  # 延迟 ms
