@@ -32,9 +32,6 @@ def mouse(data):
                 Game.detect(data)
         elif button == pynput.mouse.Button.left:
             data[fire] = pressed
-        elif button == pynput.mouse.Button.x1:
-            if pressed:
-                data[switch] = not data.get(switch)
 
     with pynput.mouse.Listener(on_click=down) as m:
         m.join()
