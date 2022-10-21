@@ -96,39 +96,14 @@ class Monitor:
         ReleaseDC(None, hdc)  # 一定要释放DC, 不然随着该函数调用次数增加会越来越卡, 表现就是不调用该函数, 系统会每两秒卡一下, 调用次数越多, 卡的程度越厉害
         return color
 
-    class Resolution:
+    @staticmethod
+    def resolution():
         """
-        分辨率
+        显示分辨率
         """
-
-        @staticmethod
-        def display():
-            """
-            显示分辨率
-            """
-            w = GetSystemMetrics(SM_CXSCREEN)
-            h = GetSystemMetrics(SM_CYSCREEN)
-            return w, h
-
-        @staticmethod
-        def virtual():
-            """
-            多屏幕组合的虚拟显示器分辨率
-            """
-            w = GetSystemMetrics(SM_CXVIRTUALSCREEN)
-            h = GetSystemMetrics(SM_CYVIRTUALSCREEN)
-            return w, h
-
-        @staticmethod
-        def physical():
-            """
-            物理分辨率
-            """
-            hdc = GetDC(None)
-            w = GetDeviceCaps(hdc, DESKTOPHORZRES)
-            h = GetDeviceCaps(hdc, DESKTOPVERTRES)
-            ReleaseDC(None, hdc)
-            return w, h
+        w = GetSystemMetrics(SM_CXSCREEN)
+        h = GetSystemMetrics(SM_CYSCREEN)
+        return w, h
 
 
 class Game:
@@ -138,7 +113,7 @@ class Game:
 
     @staticmethod
     def key():
-        w, h = Monitor.Resolution.display()
+        w, h = Monitor.resolution()
         return f'{w}:{h}'
 
     @staticmethod
