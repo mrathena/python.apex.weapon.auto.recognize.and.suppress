@@ -2,7 +2,7 @@ import multiprocessing
 import time
 from multiprocessing import Process
 
-import pynput  # conda install pynput
+import pynput  # pip install pynput
 
 from toolkit import Mouse, Game
 
