@@ -3,7 +3,6 @@ import time
 
 from win32api import GetSystemMetrics
 from win32con import SM_CXSCREEN, SM_CYSCREEN, SM_CXVIRTUALSCREEN, SM_CYVIRTUALSCREEN, DESKTOPHORZRES, DESKTOPVERTRES
-from win32print import GetDeviceCaps
 from win32gui import GetCursorPos, GetDC, ReleaseDC, GetPixel, GetWindowText, GetForegroundWindow  # conda install pywin32,
 
 import cfg
@@ -11,11 +10,12 @@ from cfg import detect, weapon
 
 try:
     driver = ctypes.CDLL('logitech.driver.dll')
+    # 该驱动每个进程可打开一个实例
     ok = driver.device_open() == 1
     if not ok:
-        print('初始化罗技驱动失败, 未安装lgs/ghub驱动')
+        print('Error, GHUB or LGS driver not found')
 except FileNotFoundError:
-    print('初始化罗技驱动失败, 缺少文件')
+    print('Error, DLL file not found')
 
 
 class Mouse:
@@ -31,50 +31,6 @@ class Mouse:
                 mx = x - ox
                 my = y - oy
             driver.moveR(mx, my, True)
-
-    @staticmethod
-    def down(code):
-        if ok:
-            driver.mouse_down(code)
-
-    @staticmethod
-    def up(code):
-        if ok:
-            driver.mouse_up(code)
-
-    @staticmethod
-    def click(code):
-        """
-        :param code: 1:左键, 2:中键, 3:右键, 4:侧下键, 5:侧上键, 6:DPI键
-        :return:
-        """
-        if ok:
-            driver.mouse_down(code)
-            driver.mouse_up(code)
-
-
-class Keyboard:
-
-    @staticmethod
-    def press(code):
-        if ok:
-            driver.key_down(code)
-
-    @staticmethod
-    def release(code):
-        if ok:
-            driver.key_up(code)
-
-    @staticmethod
-    def click(code):
-        """
-        键盘按键函数中，传入的参数采用的是键盘按键对应的键码
-        :param code: 'a'-'z':A键-Z键, '0'-'9':0-9, 其他的没猜出来
-        :return:
-        """
-        if ok:
-            driver.key_down(code)
-            driver.key_up(code)
 
 
 class Monitor:
