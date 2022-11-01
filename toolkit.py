@@ -10,7 +10,7 @@ import cfg
 from cfg import detect, weapon
 
 try:
-    driver = ctypes.CDLL(r'mouse.device.lgs.dll')  # 在Python的string前面加上‘r’, 是为了告诉编译器这个string是个raw string(原始字符串),不要转义backslash(反斜杠) '\'
+    driver = ctypes.CDLL('logitech.driver.dll')
     ok = driver.device_open() == 1
     if not ok:
         print('初始化罗技驱动失败, 未安装lgs/ghub驱动')
