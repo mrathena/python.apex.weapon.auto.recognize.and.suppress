@@ -1,42 +1,43 @@
-import ctypes
 import time
-
+import cv2
+import mss
+import numpy as np
 from win32api import GetSystemMetrics
-from win32con import SM_CXSCREEN, SM_CYSCREEN, SM_CXVIRTUALSCREEN, SM_CYVIRTUALSCREEN, DESKTOPHORZRES, DESKTOPVERTRES
-from win32gui import GetCursorPos, GetDC, ReleaseDC, GetPixel, GetWindowText, GetForegroundWindow  # conda install pywin32,
+from win32gui import GetWindowText, GetForegroundWindow, GetDC, ReleaseDC, GetPixel
+from win32con import SM_CXSCREEN, SM_CYSCREEN
 
 import cfg
 from cfg import detect, weapon
 
-try:
-    driver = ctypes.CDLL('logitech.driver.dll')
-    # 该驱动每个进程可打开一个实例
-    ok = driver.device_open() == 1
-    if not ok:
-        print('Error, GHUB or LGS driver not found')
-except FileNotFoundError:
-    print('Error, DLL file not found')
 
-
-class Mouse:
+class Capturer:
 
     @staticmethod
-    def move(x, y, absolute=False):
-        if ok:
-            if x == 0 and y == 0:
-                return
-            mx, my = x, y
-            if absolute:
-                ox, oy = GetCursorPos()
-                mx = x - ox
-                my = y - oy
-            driver.moveR(mx, my, True)
+    def mss():
+        return mss.mss()
+
+    @staticmethod
+    def grab(instance, region, convert=True):
+        """
+        region: tuple, (left, top, width, height)
+        """
+        left, top, width, height = region
+        img = instance.grab(monitor={'left': left, 'top': top, 'width': width, 'height': height})
+        if convert:
+            img = cv2.cvtColor(np.array(img), cv2.COLOR_BGRA2BGR)  # 转换为 OpenCV BGR 格式
+        return img
 
 
 class Monitor:
-    """
-    显示器
-    """
+
+    @staticmethod
+    def resolution():
+        """
+        显示分辨率
+        """
+        w = GetSystemMetrics(SM_CXSCREEN)
+        h = GetSystemMetrics(SM_CYSCREEN)
+        return w, h
 
     @staticmethod
     def pixel(x, y):
@@ -52,14 +53,22 @@ class Monitor:
         ReleaseDC(None, hdc)  # 一定要释放DC, 不然随着该函数调用次数增加会越来越卡, 表现就是不调用该函数, 系统会每两秒卡一下, 调用次数越多, 卡的程度越厉害
         return color
 
+
+class Timer:
+
     @staticmethod
-    def resolution():
+    def cost(interval):
         """
-        显示分辨率
+        转换耗时, 输入纳秒间距, 转换为合适的单位
         """
-        w = GetSystemMetrics(SM_CXSCREEN)
-        h = GetSystemMetrics(SM_CYSCREEN)
-        return w, h
+        if interval < 1000:
+            return f'{interval}ns'
+        elif interval < 1_000_000:
+            return f'{round(interval / 1000, 3)}us'
+        elif interval < 1_000_000_000:
+            return f'{round(interval / 1_000_000, 3)}ms'
+        else:
+            return f'{round(interval / 1_000_000_000, 3)}s'
 
 
 class Game:

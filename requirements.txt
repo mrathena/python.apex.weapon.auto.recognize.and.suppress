@@ -1,0 +1,5 @@
+pywin32
+pynput
+pyinstaller
+mss
+opencv-python

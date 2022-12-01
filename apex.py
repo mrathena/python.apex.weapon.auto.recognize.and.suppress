@@ -1,10 +1,11 @@
+import ctypes
 import multiprocessing
 import time
 from multiprocessing import Process
 
 import pynput  # pip install pynput
 
-from toolkit import Mouse, Game
+from toolkit import Game
 
 end = 'end'
 fire = 'fire'
@@ -71,6 +72,20 @@ def keyboard(data):
 
 
 def suppress(data):
+
+    try:
+        driver = ctypes.CDLL('logitech.driver.dll')
+        # 该驱动每个进程可打开一个实例
+        ok = driver.device_open() == 1
+        if not ok:
+            print('Error, GHUB or LGS driver not found')
+    except FileNotFoundError:
+        print('Error, DLL file not found')
+
+    def move(x, y):
+        if ok:
+            driver.moveR(x, y, True)
+
     while True:
         if data.get(end):
             break
@@ -93,13 +108,13 @@ def suppress(data):
                     operation = item[0]
                     if operation == 1:
                         temp, x, y, delay = item
-                        Mouse.move(x, y)
+                        move(x, y)
                         delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
                         if delay > 0:
                             time.sleep(delay)
                     elif operation == 2:
                         temp, code, delay = item
-                        Mouse.click(code)
+                        # click(code)
                         delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
                         if delay > 0:
                             time.sleep(delay)
@@ -118,18 +133,18 @@ def suppress(data):
                         break
                     t = time.perf_counter_ns()
                     if total < data[shake][speed] * data[shake][count]:
-                        Mouse.move(0, data[shake][strength])
+                        move(0, data[shake][strength])
                         time.sleep(delay / 1000)
                         total += delay
                     else:
-                        Mouse.move(0, 1)
+                        move(0, 1)
                         time.sleep(delay / 1000)
                         total += delay
                     # 抖枪
-                    Mouse.move(pixel, 0)
+                    move(pixel, 0)
                     time.sleep(delay / 1000)
                     total += delay
-                    Mouse.move(-pixel, 0)
+                    move(-pixel, 0)
                     time.sleep(delay / 1000)
                     total += delay
                     total += (time.perf_counter_ns() - t) // 1000 // 1000
