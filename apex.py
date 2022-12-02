@@ -1,40 +1,50 @@
 import ctypes
 import multiprocessing
 import time
+import winsound
 from multiprocessing import Process
 
-import pynput  # pip install pynput
+import pynput
 
 from toolkit import Game
 
+ads = 'ads'
 end = 'end'
 fire = 'fire'
 shake = 'shake'
 speed = 'speed'
 count = 'count'
 switch = 'switch'
-restart = 'restart'
 restrain = 'restrain'
 strength = 'strength'
+timestamp = 'timestamp'
 init = {
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
-    switch: True,  # 检测和压枪开关
+    switch: True,  # 检测和压枪开关, 侧上键
     fire: False,  # 开火状态
-    shake: None,  # 抖枪参数
+    timestamp: None,  # 按下左键开火时的时间戳
+    ads: 2,  # 基准倍数
     restrain: None,  # 压枪参数
 }
 
 
 def mouse(data):
 
-    def down(x, y, button, pressed):
-        if button == pynput.mouse.Button.right:
-            if pressed:
-                Game.detect(data)
-        elif button == pynput.mouse.Button.left:
-            data[fire] = pressed
+    def click(x, y, button, pressed):
+        if Game.game():
+            if button == pynput.mouse.Button.x2:  # 侧上键
+                if pressed:
+                    data[switch] = not data.get(switch)
+                    winsound.Beep(800 if data[switch] else 400, 200)
+            if button == pynput.mouse.Button.right:
+                if pressed:
+                    Game.detect(data)
+            elif button == pynput.mouse.Button.left:
+                data[fire] = pressed
+                if pressed:
+                    data[timestamp] = time.time_ns()
 
-    with pynput.mouse.Listener(on_click=down) as m:
+    with pynput.mouse.Listener(on_click=click) as m:
         m.join()
 
 
@@ -42,30 +52,31 @@ def keyboard(data):
 
     def release(key):
         if key == pynput.keyboard.Key.end:
-            # 结束程序
+            winsound.Beep(400, 200)
             data[end] = True
-            return False
-        elif key == pynput.keyboard.Key.home:
-            # 压枪开关
-            data[switch] = not data.get(switch)
-        elif key == pynput.keyboard.Key.esc:
-            Game.detect(data)
-        elif key == pynput.keyboard.Key.tab:
-            Game.detect(data)
-        elif key == pynput.keyboard.Key.alt_l:
-            Game.detect(data)
-        elif key == pynput.keyboard.KeyCode.from_char('1'):
-            Game.detect(data)
-        elif key == pynput.keyboard.KeyCode.from_char('2'):
-            Game.detect(data)
-        elif key == pynput.keyboard.KeyCode.from_char('3'):
-            Game.detect(data)
-        elif key == pynput.keyboard.KeyCode.from_char('e'):
-            Game.detect(data)
-        elif key == pynput.keyboard.KeyCode.from_char('r'):
-            Game.detect(data)
-        elif key == pynput.keyboard.KeyCode.from_char('v'):
-            Game.detect(data)
+            return False  # 结束监听线程
+        if Game.game():
+            if key == pynput.keyboard.Key.home:
+                data[switch] = not data.get(switch)
+                winsound.Beep(800 if data[switch] else 400, 200)
+            elif key == pynput.keyboard.Key.esc:
+                Game.detect(data)
+            elif key == pynput.keyboard.Key.tab:
+                Game.detect(data)
+            elif key == pynput.keyboard.Key.alt_l:
+                Game.detect(data)
+            elif key == pynput.keyboard.KeyCode.from_char('1'):
+                Game.detect(data)
+            elif key == pynput.keyboard.KeyCode.from_char('2'):
+                Game.detect(data)
+            elif key == pynput.keyboard.KeyCode.from_char('3'):
+                Game.detect(data)
+            elif key == pynput.keyboard.KeyCode.from_char('e'):
+                Game.detect(data)
+            elif key == pynput.keyboard.KeyCode.from_char('r'):
+                Game.detect(data)
+            elif key == pynput.keyboard.KeyCode.from_char('v'):
+                Game.detect(data)
 
     with pynput.keyboard.Listener(on_release=release) as k:
         k.join()
@@ -87,9 +98,12 @@ def suppress(data):
             driver.moveR(x, y, True)
 
     while True:
+
         if data.get(end):
             break
-        if data.get(switch) is False:
+        if not Game.game():  # 如果不在游戏中
+            continue
+        if not data.get(switch):  # 如果开关关闭
             continue
         if data.get(fire):
             if data.get(restrain) is not None:
@@ -118,36 +132,6 @@ def suppress(data):
                         delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
                         if delay > 0:
                             time.sleep(delay)
-            elif data.get(shake) is not None:
-                total = 0  # 总计时 ms
-                delay = 1  # 延迟 ms
-                pixel = 4  # 抖动像素
-                while True:
-                    if not data[fire]:  # 停止开火
-                        break
-                    if not Game.game():  # 不在游戏中
-                        break
-                    if not Game.armed():  # 未持有武器
-                        break
-                    if Game.empty():  # 弹夹为空
-                        break
-                    t = time.perf_counter_ns()
-                    if total < data[shake][speed] * data[shake][count]:
-                        move(0, data[shake][strength])
-                        time.sleep(delay / 1000)
-                        total += delay
-                    else:
-                        move(0, 1)
-                        time.sleep(delay / 1000)
-                        total += delay
-                    # 抖枪
-                    move(pixel, 0)
-                    time.sleep(delay / 1000)
-                    total += delay
-                    move(-pixel, 0)
-                    time.sleep(delay / 1000)
-                    total += delay
-                    total += (time.perf_counter_ns() - t) // 1000 // 1000
 
 
 if __name__ == '__main__':

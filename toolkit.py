@@ -86,7 +86,7 @@ class Game:
         """
         是否游戏窗体在最前
         """
-        return 'Apex Legends' == GetWindowText(GetForegroundWindow())
+        return 'Apex Legends' in GetWindowText(GetForegroundWindow())
 
     @staticmethod
     def play():
