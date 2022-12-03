@@ -6,7 +6,7 @@ from multiprocessing import Process
 
 import pynput
 
-from toolkit import Apex
+from toolkit import Timer, Apex
 
 ads = 'ads'
 end = 'end'
@@ -15,15 +15,19 @@ count = 'count'
 switch = 'switch'
 detect = 'detect'
 weapon = 'weapon'
+interval = 'interval'
+category = 'category'
+vertical = 'vertical'
 timestamp = 'timestamp'
+horizontal = 'horizontal'
 init = {
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
     switch: True,  # 检测和压枪开关, 侧上键
     detect: 0,  # 检测信号, 非0触发主循环检测, 检测完置0
-    weapon: None,  # 压枪参数
+    weapon: None,  # 武器数据
     fire: False,  # 开火状态
     timestamp: None,  # 按下左键开火时的时间戳
-    ads: 2,  # 基准倍数
+    ads: 1.5,  # 基准倍数
 }
 
 
@@ -111,32 +115,45 @@ def suppress(data):
             time.sleep(0.2)  # 防止UI还没有改变
             Apex.detect(data)
         if data.get(fire):
-            if data.get(weapon) is not None:
-                for item in data.get(weapon):
-                    if not data.get(fire):  # 停止开火
-                        break
-                    t1 = time.perf_counter_ns()
-                    if not Apex.game():  # 不在游戏中
-                        break
-                    if not Apex.armed():  # 未持有武器
-                        break
-                    if Apex.empty():  # 弹夹为空
-                        break
-                    t2 = time.perf_counter_ns()
-                    # operation: # 1:移动 2:按下
-                    operation = item[0]
-                    if operation == 1:
-                        temp, x, y, delay = item
-                        move(x, y)
-                        delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
-                        if delay > 0:
-                            time.sleep(delay)
-                    elif operation == 2:
-                        temp, code, delay = item
-                        # click(code)
-                        delay = (delay - (t2 - t1) // 1000 // 1000) / 1000
-                        if delay > 0:
-                            time.sleep(delay)
+            gun = data.get(weapon)  # 获取当前武器数据
+            if not gun:  # 如果没有数据则不压枪
+                print('武器无需压枪')
+                continue
+            clazz = gun.get(category)
+            if not clazz:  # 数据没有 category 字段
+                print('数据不正确')
+                continue
+            if Apex.empty():  # 弹夹为空
+                print('武器弹夹空')
+                continue
+            if not Apex.armed():  # 未持有武器
+                print('未持有武器')
+                continue
+            # print('----------')
+            # 数据分种类
+            # 301 这种射击间隔稳定的枪
+            # 哈沃克 这种初始需要预热然后射击间隔稳定的枪(装备涡轮后变成301这种)
+            # 专注 这种初始几枪射击间隔逐渐缩小后续保持稳定的枪(装备涡轮后缩小前几枪的射击间隔)
+            if clazz == 1:
+                cost = time.time_ns() - data[timestamp]  # 开火时长
+                base = gun[interval] * 1_000_000  # 基准间隔时间转纳秒
+                i = cost // base  # 本回合的压枪力度数值索引
+                v = int(data[ads] * gun[vertical][i])  # 垂直
+                h = int(data[ads] * gun[horizontal][i])  # 水平
+                print(f'开火时长:{Timer.cost(cost)}, {i + 2}, 压制力度:{v}')
+                cost = time.time_ns() - data[timestamp]
+                left = base - cost % base  # 本回合剩余时间纳秒
+                if v == 0:
+                    begin = time.perf_counter_ns()
+                    while time.perf_counter_ns() - begin < left:
+                        pass
+                else:
+                    mean = left / v  # 平缓压枪每个实际力度的延时
+                    for i in range(0, v):
+                        begin = time.perf_counter_ns()
+                        while time.perf_counter_ns() - begin < mean:
+                            pass
+                        move(0, 1)
 
 
 if __name__ == '__main__':

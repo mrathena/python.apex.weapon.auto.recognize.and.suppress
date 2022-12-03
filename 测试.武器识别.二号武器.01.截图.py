@@ -5,7 +5,7 @@ import mss
 
 from toolkit import Capturer
 
-instance = Capturer.mss()
+instance = Capturer.getMssInstance()
 
 
 def click(x, y, button, pressed):

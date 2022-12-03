@@ -254,11 +254,12 @@ class Apex:
         """
         t1 = time.perf_counter_ns()
         if data.get(cfg.switch) is False:
+            data[cfg.weapon] = None  # 清空武器数据
             t2 = time.perf_counter_ns()
             print(f'耗时: {Timer.cost(t2 - t1)}, 开关已关闭')
             return
         if Apex.play() is False:
-            data[cfg.weapon] = None  # 清空武器数据
+            data[cfg.weapon] = None
             t2 = time.perf_counter_ns()
             print(f'耗时: {Timer.cost(t2 - t1)}, 不在对局中')
             return
