@@ -224,16 +224,25 @@ class Apex:
         return color == Monitor.pixel(x, y)
 
     @staticmethod
-    def turbo(name):
+    def attachment(config, name):
         """
-        传入名称, 判断是否需要做涡轮检测, 需要的话再判断是否有涡轮
+        配件检测
+        传入配置和名称, 判断是否需要做对应配件检测, 需要的话再判断是否有对应配件
         """
-        data = cfg.detect.get(Apex.key()).get(cfg.turbo)
+        data = config
         if name not in data.keys():
             return False
         color = data.get(cfg.color)
         x, y = data.get(name)
         return color == Monitor.pixel(x, y)
+
+    @staticmethod
+    def turbo(name):
+        """
+        传入名称, 判断是否需要做涡轮检测, 需要的话再判断是否有涡轮
+        """
+        data = cfg.detect.get(Apex.key()).get(cfg.turbo)
+        return Apex.attachment(data, name)
 
     @staticmethod
     def trigger(name):
@@ -241,11 +250,7 @@ class Apex:
         传入名称, 判断是否需要做双发扳机检测, 需要的话再判断是否有双发扳机
         """
         data = cfg.detect.get(Apex.key()).get(cfg.trigger)
-        if name not in data.keys():
-            return False
-        color = data.get(cfg.color)
-        x, y = data.get(name)
-        return color == Monitor.pixel(x, y)
+        return Apex.attachment(data, name)
 
     @staticmethod
     def thermite(name):
@@ -253,11 +258,7 @@ class Apex:
         传入名称, 判断是否需要做铝热剂检测, 需要的话再判断是否有铝热剂
         """
         data = cfg.detect.get(Apex.key()).get(cfg.thermite)
-        if name not in data.keys():
-            return False
-        color = data.get(cfg.color)
-        x, y = data.get(name)
-        return color == Monitor.pixel(x, y)
+        return Apex.attachment(data, name)
 
     @staticmethod
     def detect(data):
