@@ -1,5 +1,5 @@
-pywin32
-pynput
-pyinstaller
 mss
+pynput
+pywin32
+pyinstaller
 opencv-python

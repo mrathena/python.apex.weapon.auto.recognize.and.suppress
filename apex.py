@@ -6,39 +6,38 @@ from multiprocessing import Process
 
 import pynput
 
-from toolkit import Game
+from toolkit import Apex
 
 ads = 'ads'
 end = 'end'
 fire = 'fire'
-shake = 'shake'
-speed = 'speed'
 count = 'count'
 switch = 'switch'
-restrain = 'restrain'
-strength = 'strength'
+detect = 'detect'
+weapon = 'weapon'
 timestamp = 'timestamp'
 init = {
     end: False,  # 退出标记, End 键按下后改为 True, 其他进程线程在感知到变更后结束自身
     switch: True,  # 检测和压枪开关, 侧上键
+    detect: 0,  # 检测信号, 非0触发主循环检测, 检测完置0
+    weapon: None,  # 压枪参数
     fire: False,  # 开火状态
     timestamp: None,  # 按下左键开火时的时间戳
     ads: 2,  # 基准倍数
-    restrain: None,  # 压枪参数
 }
 
 
 def mouse(data):
 
     def click(x, y, button, pressed):
-        if Game.game():
+        if Apex.game():
             if button == pynput.mouse.Button.x2:  # 侧上键
                 if pressed:
                     data[switch] = not data.get(switch)
                     winsound.Beep(800 if data[switch] else 400, 200)
             if button == pynput.mouse.Button.right:
                 if pressed:
-                    Game.detect(data)
+                    data[detect] = 1
             elif button == pynput.mouse.Button.left:
                 data[fire] = pressed
                 if pressed:
@@ -55,28 +54,28 @@ def keyboard(data):
             winsound.Beep(400, 200)
             data[end] = True
             return False  # 结束监听线程
-        if Game.game():
+        if Apex.game():
             if key == pynput.keyboard.Key.home:
                 data[switch] = not data.get(switch)
                 winsound.Beep(800 if data[switch] else 400, 200)
             elif key == pynput.keyboard.Key.esc:
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.Key.tab:
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.Key.alt_l:
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('1'):
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('2'):
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('3'):
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('e'):
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('r'):
-                Game.detect(data)
+                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('v'):
-                Game.detect(data)
+                data[detect] = 1
 
     with pynput.keyboard.Listener(on_release=release) as k:
         k.join()
@@ -97,25 +96,31 @@ def suppress(data):
         if ok:
             driver.moveR(x, y, True)
 
+    winsound.Beep(800, 200)
+
     while True:
 
         if data.get(end):
             break
-        if not Game.game():  # 如果不在游戏中
+        if not Apex.game():  # 如果不在游戏中
             continue
         if not data.get(switch):  # 如果开关关闭
             continue
+        if data[detect] != 0:  # 触发武器检测
+            data[detect] = 0
+            time.sleep(0.2)  # 防止UI还没有改变
+            Apex.detect(data)
         if data.get(fire):
-            if data.get(restrain) is not None:
-                for item in data.get(restrain):
+            if data.get(weapon) is not None:
+                for item in data.get(weapon):
                     if not data.get(fire):  # 停止开火
                         break
                     t1 = time.perf_counter_ns()
-                    if not Game.game():  # 不在游戏中
+                    if not Apex.game():  # 不在游戏中
                         break
-                    if not Game.armed():  # 未持有武器
+                    if not Apex.armed():  # 未持有武器
                         break
-                    if Game.empty():  # 弹夹为空
+                    if Apex.empty():  # 弹夹为空
                         break
                     t2 = time.perf_counter_ns()
                     # operation: # 1:移动 2:按下
