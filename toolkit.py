@@ -248,6 +248,18 @@ class Apex:
         return color == Monitor.pixel(x, y)
 
     @staticmethod
+    def thermite(name):
+        """
+        传入名称, 判断是否需要做铝热剂检测, 需要的话再判断是否有铝热剂
+        """
+        data = cfg.detect.get(Apex.key()).get(cfg.thermite)
+        if name not in data.keys():
+            return False
+        color = data.get(cfg.color)
+        x, y = data.get(name)
+        return color == Monitor.pixel(x, y)
+
+    @staticmethod
     def detect(data):
         """
         决策是否需要压枪, 向信号量写数据
@@ -274,14 +286,17 @@ class Apex:
         #     t2 = time.perf_counter_ns()
         #     print(f'耗时: {Timer.cost(t2 - t1)}, 不是自动/半自动模式')
         #     return
-        # 检测通过, 额外判断涡轮与双发扳机
+        # 检测通过, 额外判断涡轮与双发扳机与火力全开(暴走)
         turbo = Apex.turbo(name)
         trigger = Apex.trigger(name)
+        thermite = Apex.thermite(name)
         # 拿对应压枪参数
         if turbo:
             name += ' (涡轮)'
         if trigger:
             name += ' (双发扳机)'
+        if thermite:
+            name += ' (火力全开)'
         data[cfg.weapon] = cfg.weapons.get(name)  # 记录当前武器压制参数
         t2 = time.perf_counter_ns()
         print(f'{name}, {Timer.cost(t2 - t1)}')

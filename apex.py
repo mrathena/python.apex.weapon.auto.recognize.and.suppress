@@ -137,7 +137,7 @@ def suppress(data):
                 cost = time.time_ns() - data[timestamp]  # 开火时长
                 base = gun[interval] * 1_000_000  # 基准间隔时间转纳秒
                 i = cost // base  # 本回合的压枪力度数值索引
-                if i > len(gun[vertical]):
+                if i > len(gun[vertical]) - 1:
                     continue
                 v = int(data[ads] * gun[vertical][i])  # 垂直
                 h = int(data[ads] * gun[horizontal][i])  # 水平
@@ -174,7 +174,7 @@ def suppress(data):
                     continue
                 base = gun[interval] * 1_000_000  # 基准间隔时间转纳秒
                 i = (cost - gun[warmup] * 1_000_000) // base  # 本回合的压枪力度数值索引
-                if i > len(gun[vertical]):
+                if i > len(gun[vertical]) - 1:
                     continue
                 v = int(data[ads] * gun[vertical][i])  # 垂直
                 h = int(data[ads] * gun[horizontal][i])  # 水平

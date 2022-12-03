@@ -47,9 +47,9 @@ def test(data):
 
     winsound.Beep(800, 200)
 
-    warmup = 440  # 预热时间
-    interval = 92  # 首先假设一个武器射击间隔, 毫秒
-    count = 35  # 间隔个数, 如果弹夹有28发子弹, 则射击间隔只有27个
+    warmup = 0  # 预热时间
+    interval = 59  # 首先假设一个武器射击间隔, 毫秒
+    count = 27  # 间隔个数, 如果弹夹有28发子弹, 则射击间隔只有27个
 
     while True:
         if data[end]:
