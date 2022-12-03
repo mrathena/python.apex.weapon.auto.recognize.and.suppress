@@ -47,8 +47,9 @@ def test(data):
 
     winsound.Beep(800, 200)
 
-    interval = 75  # 首先假设一个武器射击间隔, 毫秒
-    count = 27  # 间隔个数, 如果弹夹有28发子弹, 则射击间隔只有27个
+    warmup = 440  # 预热时间
+    interval = 92  # 首先假设一个武器射击间隔, 毫秒
+    count = 35  # 间隔个数, 如果弹夹有28发子弹, 则射击间隔只有27个
 
     while True:
         if data[end]:
@@ -56,12 +57,12 @@ def test(data):
         if not Apex.game():
             continue
         if data[fire]:  # 检测到按下左键时, 开始休眠, 醒来时立刻大幅度移动鼠标, 如果移动瞬间刚好子弹打完, 说明射击间隔比较准, 否则继续调整射击间隔并测试
-            total = interval * 1_000_000 * count
+            total = warmup * 1_000_000 + interval * 1_000_000 * count
             begin = time.perf_counter_ns()
             while time.perf_counter_ns() - begin < total:
                 pass
             move(10000, 0)
-            time.sleep(3)  # 防止一轮循环结束立马重新进来
+            time.sleep(1)  # 防止一轮循环结束立马重新进来
 
 
 if __name__ == '__main__':

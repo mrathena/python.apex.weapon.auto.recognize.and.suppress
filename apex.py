@@ -15,6 +15,7 @@ count = 'count'
 switch = 'switch'
 detect = 'detect'
 weapon = 'weapon'
+warmup = 'warmup'
 interval = 'interval'
 category = 'category'
 vertical = 'vertical'
@@ -27,7 +28,7 @@ init = {
     weapon: None,  # 武器数据
     fire: False,  # 开火状态
     timestamp: None,  # 按下左键开火时的时间戳
-    ads: 1,  # 基准倍数, 可认为是鼠标灵敏度
+    ads: 1.5,  # 基准倍数, 可认为是鼠标灵敏度
 }
 
 
@@ -119,17 +120,13 @@ def suppress(data):
         if data.get(fire):
             gun = data.get(weapon)  # 获取当前武器数据
             if not gun:  # 如果没有数据则不压枪
-                print('武器无需压枪')
                 continue
             clazz = gun.get(category)
             if not clazz:  # 数据没有 category 字段
-                print('数据不正确')
                 continue
             if Apex.empty():  # 弹夹为空
-                print('武器弹夹空')
                 continue
             if not Apex.armed():  # 未持有武器
-                print('未持有武器')
                 continue
             # print('----------')
             # 数据分种类
@@ -140,6 +137,8 @@ def suppress(data):
                 cost = time.time_ns() - data[timestamp]  # 开火时长
                 base = gun[interval] * 1_000_000  # 基准间隔时间转纳秒
                 i = cost // base  # 本回合的压枪力度数值索引
+                if i > len(gun[vertical]):
+                    continue
                 v = int(data[ads] * gun[vertical][i])  # 垂直
                 h = int(data[ads] * gun[horizontal][i])  # 水平
                 print(f'开火时长: {Timer.cost(cost)}, 针对第 {i + 2} 发子弹的压制力度: v:{v}, h:{h}')
@@ -169,6 +168,47 @@ def suppress(data):
                     # if hs.get(times, 0) != 0 or vs.get(times, 0) != 0:
                     #     print(times, hs.get(times, 0), vs.get(times, 0))
                     move(hs.get(times, 0), vs.get(times, 0))
+            elif clazz == 2:
+                cost = time.time_ns() - data[timestamp]  # 开火时长
+                if cost - gun[warmup] * 1_000_000 <= 0:
+                    continue
+                base = gun[interval] * 1_000_000  # 基准间隔时间转纳秒
+                i = (cost - gun[warmup] * 1_000_000) // base  # 本回合的压枪力度数值索引
+                if i > len(gun[vertical]):
+                    continue
+                v = int(data[ads] * gun[vertical][i])  # 垂直
+                h = int(data[ads] * gun[horizontal][i])  # 水平
+                print(f'开火时长: {Timer.cost(cost)}, 针对第 {i + 2} 发子弹的压制力度: v:{v}, h:{h}')
+                # move(h, v)  # 非平缓压枪, 简单但是晃, 下面是平滑压枪, 复杂但是稳
+                cost = time.time_ns() - data[timestamp]
+                left = base - (cost - gun[warmup] * 1_000_000) % base  # 本回合剩余时间纳秒
+                absv, absh = abs(v), abs(h)
+                part = left / ((absv if v != 0 else 1) * (absh if h != 0 else 1))
+                vs = {}
+                if v != 0:
+                    multiple = round(left / absv / part)
+                    for i in range(1, absv + 1):
+                        vs[i * multiple] = int(v / absv)
+                hs = {}
+                if h != 0:
+                    multiple = round(left / absh / part)
+                    for i in range(1, absh + 1):
+                        hs[i * multiple] = int(h / absh)
+                # print(len(vs), vs)
+                # print(len(hs), hs)
+                start = time.perf_counter_ns()
+                for i in range(0, (absv if v != 0 else 1) * (absh if h != 0 else 1)):
+                    begin = time.perf_counter_ns()
+                    while time.perf_counter_ns() - begin < part:
+                        pass
+                    times = round((time.perf_counter_ns() - start) / part)
+                    # if hs.get(times, 0) != 0 or vs.get(times, 0) != 0:
+                    #     print(times, hs.get(times, 0), vs.get(times, 0))
+                    move(hs.get(times, 0), vs.get(times, 0))
+            elif clazz == 3:
+                pass
+
+
 
 
 if __name__ == '__main__':
