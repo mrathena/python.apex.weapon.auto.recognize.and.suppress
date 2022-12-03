@@ -27,7 +27,7 @@ init = {
     weapon: None,  # 武器数据
     fire: False,  # 开火状态
     timestamp: None,  # 按下左键开火时的时间戳
-    ads: 1.5,  # 基准倍数
+    ads: 1,  # 基准倍数, 可认为是鼠标灵敏度
 }
 
 
@@ -98,6 +98,8 @@ def suppress(data):
 
     def move(x, y):
         if ok:
+            if x == 0 and y == 0:
+                return
             driver.moveR(x, y, True)
 
     winsound.Beep(800, 200)
@@ -140,20 +142,33 @@ def suppress(data):
                 i = cost // base  # 本回合的压枪力度数值索引
                 v = int(data[ads] * gun[vertical][i])  # 垂直
                 h = int(data[ads] * gun[horizontal][i])  # 水平
-                print(f'开火时长:{Timer.cost(cost)}, {i + 2}, 压制力度:{v}')
+                print(f'开火时长: {Timer.cost(cost)}, 针对第 {i + 2} 发子弹的压制力度: v:{v}, h:{h}')
+                # move(h, v)  # 非平缓压枪, 简单但是晃, 下面是平滑压枪, 复杂但是稳
                 cost = time.time_ns() - data[timestamp]
                 left = base - cost % base  # 本回合剩余时间纳秒
-                if v == 0:
+                absv, absh = abs(v), abs(h)
+                part = left / ((absv if v != 0 else 1) * (absh if h != 0 else 1))
+                vs = {}
+                if v != 0:
+                    multiple = round(left / absv / part)
+                    for i in range(1, absv + 1):
+                        vs[i * multiple] = int(v / absv)
+                hs = {}
+                if h != 0:
+                    multiple = round(left / absh / part)
+                    for i in range(1, absh + 1):
+                        hs[i * multiple] = int(h / absh)
+                # print(len(vs), vs)
+                # print(len(hs), hs)
+                start = time.perf_counter_ns()
+                for i in range(0, (absv if v != 0 else 1) * (absh if h != 0 else 1)):
                     begin = time.perf_counter_ns()
-                    while time.perf_counter_ns() - begin < left:
+                    while time.perf_counter_ns() - begin < part:
                         pass
-                else:
-                    mean = left / v  # 平缓压枪每个实际力度的延时
-                    for i in range(0, v):
-                        begin = time.perf_counter_ns()
-                        while time.perf_counter_ns() - begin < mean:
-                            pass
-                        move(0, 1)
+                    times = round((time.perf_counter_ns() - start) / part)
+                    # if hs.get(times, 0) != 0 or vs.get(times, 0) != 0:
+                    #     print(times, hs.get(times, 0), vs.get(times, 0))
+                    move(hs.get(times, 0), vs.get(times, 0))
 
 
 if __name__ == '__main__':
