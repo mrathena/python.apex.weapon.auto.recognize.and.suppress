@@ -206,9 +206,7 @@ def suppress(data):
                     #     print(times, hs.get(times, 0), vs.get(times, 0))
                     move(hs.get(times, 0), vs.get(times, 0))
             elif clazz == 3:
-                pass
-
-
+                pass  # 专注, 不太会测这种不同射击间隔的武器
 
 
 if __name__ == '__main__':
