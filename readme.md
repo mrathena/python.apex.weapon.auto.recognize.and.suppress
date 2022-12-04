@@ -62,7 +62,7 @@ pip install mss pynput pywin32 pyinstaller python-opencv
 
 大佬封装的 `logitech.driver.dll` 没有文档, 下面是某老哥列出的该库里面的方法, 具体用法参考 `测试.罗技.py`
 
-![](readme\20221204.131618.213.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/20221204.131618.213.png)
 
 ## 键鼠监听
 
@@ -78,7 +78,7 @@ pip install mss pynput pywin32 pyinstaller python-opencv
 
 # 核心逻辑
 
-![](readme\33b6e9800ab06923ab0ebd36dc12f9cd_07fb8b78dafd413e9b42740b7bf0b7c9.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/33b6e9800ab06923ab0ebd36dc12f9cd_07fb8b78dafd413e9b42740b7bf0b7c9.png)
 
 ## 是否在游戏内
 
@@ -92,11 +92,11 @@ Pubg 的 UI 大部分都是透明的, 点的颜色会受到背景的干扰. Apex
 
 ## 获取武器索引 无武器/一号武器/二号武器
 
-![](readme\8b61e8800704303f84fdaff0d4ca1443_f996d5e517b54f1b9292e76c6447d50a.png)
-![](readme\8f2b618171de7c49e00775404d2b1f04_84a13f65b07343deb5f9fd4be2f4bb6c.png)
-![](readme\08544682aebd95723453033db62e4c6a_369ff03d5009485fa5d4fbf268b7d02e.png)
-![](readme\312031ed08fee89c73bfe3e76ab3e91b_0605638c35ba470e90d93e10d79f2884.png)
-![](readme\e941129fb3646482995cde4c33ee51ec_1040d8042c0645d9a165fc10db5bc769.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/8b61e8800704303f84fdaff0d4ca1443_f996d5e517b54f1b9292e76c6447d50a.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/8f2b618171de7c49e00775404d2b1f04_84a13f65b07343deb5f9fd4be2f4bb6c.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/08544682aebd95723453033db62e4c6a_369ff03d5009485fa5d4fbf268b7d02e.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/312031ed08fee89c73bfe3e76ab3e91b_0605638c35ba470e90d93e10d79f2884.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/e941129fb3646482995cde4c33ee51ec_1040d8042c0645d9a165fc10db5bc769.png)
 
 假设白线交点是 A, 交点下移一个像素是 B, 则有如下结论
 - A 是灰色: 没有武器
@@ -105,12 +105,12 @@ Pubg 的 UI 大部分都是透明的, 点的颜色会受到背景的干扰. Apex
 
 ## 识别武器名称 纯白点计数法
 
-![](readme\和平.png)
-![](readme\R301.png)
-![](readme\平行.png)
-![](readme\滋崩.png)
-![](readme\哈沃克.png)
-![](readme\克雷贝尔.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/和平.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/R301.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/平行.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/滋崩.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/哈沃克.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/克雷贝尔.png)
 
 需要先获取到武器索引, 如果是无武器不识别名称, 如果是一号二号则需要截取对应位置的名称图片, 做进一步识别
 
@@ -120,7 +120,7 @@ Pubg 的 UI 大部分都是透明的, 点的颜色会受到背景的干扰. Apex
 
 ## 如何判断武器模式 全自动/连发/单发
 
-![](readme\img.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/img.png)
 
 需要压枪的只有全自动和半自动两种模式的武器, 单发不需要压枪(想把单发武器做成自动连发), 喷子和狙不需要压枪
 
@@ -130,7 +130,7 @@ Pubg 的 UI 大部分都是透明的, 点的颜色会受到背景的干扰. Apex
 
 ## 判断弹夹是否打空
 
-![](readme\82a519f523e1b530a68ec0d6a7868fa0_25b3c3ef8f3c45c88509e9112b789033.png)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/82a519f523e1b530a68ec0d6a7868fa0_25b3c3ef8f3c45c88509e9112b789033.png)
 
 弹夹中子弹数大多为两位数, 所以只需确认十位不为0, 即可认为不空, 十位为0且个位为0, 即可认为空
 - 十位的点, 在数字正中间即可, 1-9都是纯白色, 0是灰色. 注意, 这个灰色不是固定颜色, 会随着背景改变而改变
