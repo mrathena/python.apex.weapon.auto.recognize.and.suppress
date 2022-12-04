@@ -140,6 +140,10 @@ L-STAR 这把枪弹夹机制和其他枪不一样, 这里不考虑
 
 ## 判断配件是否存在 涡轮/双发扳机/火力全开状态(暴雷)
 
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/1670138745397109000.jpg)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/1670138766440992600.jpg)
+![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/1670138852349917400.jpg)
+
 部分武器的射击间隔或激发模式受到某些武器配件的影响, 先根据识别到的武器名称判断是否需要进行配件检测, 需要的话再到对应位置看下配件是否存在即可, 配件上有固定的纯白色点
 
 ## 判断是否持有武器
