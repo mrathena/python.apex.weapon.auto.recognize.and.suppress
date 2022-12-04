@@ -208,4 +208,4 @@ pyinstaller apex.py -p cfg.py -p toolkit.py -p mouse.device.lgs.dll
 
 > [YOLO V7 keypoint 人体关键点检测](https://xugaoxiang.com/2022/07/21/yolov7/)
 
-大多数 FPS 游戏中要检测的目标都为人形, 可以训练一个 通用型人体骨骼检测模型, 在各种类似游戏中应该都能有不错的效果
+大多数 FPS 游戏中要检测的目标都为人形, 可以训练一个 通用型人体骨骼检测模型, 在类似游戏中应该都能有不错的效果
