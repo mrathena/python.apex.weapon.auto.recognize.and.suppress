@@ -63,23 +63,13 @@ def keyboard(data):
             if key == pynput.keyboard.Key.home:
                 data[switch] = not data.get(switch)
                 winsound.Beep(800 if data[switch] else 400, 200)
-            elif key == pynput.keyboard.Key.esc:
-                data[detect] = 1
             elif key == pynput.keyboard.Key.tab:
-                data[detect] = 1
-            elif key == pynput.keyboard.Key.alt_l:
                 data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('1'):
                 data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('2'):
                 data[detect] = 1
-            elif key == pynput.keyboard.KeyCode.from_char('3'):
-                data[detect] = 1
             elif key == pynput.keyboard.KeyCode.from_char('e'):
-                data[detect] = 1
-            elif key == pynput.keyboard.KeyCode.from_char('r'):
-                data[detect] = 1
-            elif key == pynput.keyboard.KeyCode.from_char('v'):
                 data[detect] = 1
 
     with pynput.keyboard.Listener(on_release=release) as k:

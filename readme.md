@@ -17,7 +17,7 @@
 按键说明, 可自行修改适合自己的键位
 - 结束程序: End
 - 开关切换: 鼠标侧上键
-- 武器识别: 鼠标右键按下/1/2/3/E/R/V/L-Alt/Tab/Esc
+- 武器识别: 鼠标右键按下/1/2/E/Tab
 
 适配说明, 目前仅适配了 3440×1440 分辨率下无边框窗口模式, 其他分辨率可自行适配
 
@@ -48,7 +48,7 @@ pip install mss pynput pywin32 pyinstaller python-opencv
 
 ### 驱动安装和系统设置
 
-[百度网盘 罗技键鼠驱动](https://pan.baidu.com/s/1VkE2FQrNEOOkW6tCOLZ-kw?pwd=yh3s)
+> [百度网盘 罗技键鼠驱动](https://pan.baidu.com/s/1VkE2FQrNEOOkW6tCOLZ-kw?pwd=yh3s)
 
 罗技驱动分 LGS (老) 和 GHub (新), LGS 的话, 需要使用 9.02.65 版本的, GHub 的话, 需要使用 2021.11 之前的, 二者自选其一即可
 
@@ -152,7 +152,7 @@ L-STAR 这把枪弹夹机制和其他枪不一样, 这里不考虑
 - 切换开关, 鼠标侧上键按下
 - 识别武器
   - 鼠标右键按下时(瞄准模式). 和游戏内原本的按键功能不冲突
-  - 1(切换一号武器) / 2(切换二号武器) / 3(收起武器) / E(交互/更换武器) / V(切换射击模式) / R(更换弹夹) / Tab(打开背包) / Esc(关闭各种窗口) / Alt(求生物品) 键释放时
+  - 1(切换一号武器) / 2(切换二号武器) E(交互/更换武器) / Tab(关闭背包) 键释放时
 
 识别武器涉及截图和数次屏幕取点操作, 耗时相对比较长(60毫秒左右), 不应该放在键鼠监听的钩子函数内, 否则可能在游戏中感觉到键鼠卡顿. 通常只在钩子函数内触发信号量改变, 在其他进程中完成识别流程
 
@@ -186,15 +186,20 @@ pyinstaller apex.py -p cfg.py -p toolkit.py -p mouse.device.lgs.dll
 
 # 扩展
 
+## Python Pubg 武器自动识别与压枪
+
+> [GitHub python.pubg.weapon.auto.recognize.and.suppress](https://github.com/mrathena/python.pubg.weapon.auto.recognize.and.suppress)
+
 ## 拓展 目标检测 与 自瞄, 彻底告别压枪
 
-[CSDN Python Apex YOLO V5 6.2 目标检测与自瞄 全过程记录](https://blog.csdn.net/mrathena/article/details/126860226)
+> [CSDN Python Apex YOLO V5 6.2 目标检测与自瞄 全过程记录](https://blog.csdn.net/mrathena/article/details/126860226)
 
 因为没有计算机视觉相关方向的专业知识, 所以做出来的东西, 有一定效果, 但是还有很多不足
 
 不同的游戏, 都需要准备大量精准的数据集做训练, 才能取得比较好的效果
 
 # 拓展 通用型人体骨骼检测 与 自瞄, 训练一次, FPS 游戏通用
+
 > [【亦】警惕AI外挂！我写了一个枪枪爆头的视觉AI，又亲手“杀死”了它](https://www.bilibili.com/video/BV1Lq4y1M7E2/)
 
 > [YOLO V7 keypoint 人体关键点检测](https://xugaoxiang.com/2022/07/21/yolov7/)
