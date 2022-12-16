@@ -52,7 +52,7 @@ pip install mss pynput pywin32 pyinstaller python-opencv
 
 罗技驱动分 LGS (老) 和 GHub (新), LGS 的话, 需要使用 9.02.65 版本的, GHub 的话, 需要使用 2021.11 之前的, 二者自选其一即可
 
-装好驱动后, 无需重启电脑. hosts 文件添加 `127.0.0.1 updates.ghub.logitechg.com` 防止更新. 在 hosts 文件 右键-属性-安全 里给当前用户授予完全访问权限后, 就可以修改保存了
+装好驱动后, 无需重启电脑. 运行 `屏蔽GHUB更新.exe` 防止更新
 
 另外需要确保 控制面板-鼠标-指针选项 中下面两个设置
 - 提高指针精确度 选项去掉, 不然会造成实际移动距离变大
