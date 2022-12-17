@@ -194,10 +194,11 @@ pyinstaller apex.py -p cfg.py -p toolkit.py -p mouse.device.lgs.dll
 
 > [GitHub python.pubg.weapon.auto.recognize.and.suppress](https://github.com/mrathena/python.pubg.weapon.auto.recognize.and.suppress)
 
-## 拓展 目标检测 与 自瞄, 彻底告别压枪
+## Python Apex YOLO V5 6.2 目标检测与自瞄
 
 > [CSDN Python Apex YOLO V5 6.2 目标检测与自瞄 全过程记录](https://blog.csdn.net/mrathena/article/details/126860226)
-> [GitHub Python Apex YOLO V5 6.2 自瞄](https://github.com/mrathena/python.yolo.apex.autoaim.helper)
+
+> [GitHub Python Apex YOLO V5 6.2 目标检测与自瞄](https://github.com/mrathena/python.yolo.apex.autoaim.helper)
 
 因为没有计算机视觉相关方向的专业知识, 所以做出来的东西, 有一定效果, 但是还有很多不足
 
