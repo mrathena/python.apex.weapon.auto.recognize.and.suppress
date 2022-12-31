@@ -79,7 +79,9 @@ def keyboard(data):
 def suppress(data):
 
     try:
-        driver = ctypes.CDLL('logitech.driver.dll')
+        import os
+        root = os.path.abspath(os.path.dirname(__file__))
+        driver = ctypes.CDLL(f'{root}/logitech.driver.dll')
         # 该驱动每个进程可打开一个实例
         ok = driver.device_open() == 1
         if not ok:
