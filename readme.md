@@ -64,7 +64,7 @@ pyinstaller apex.py -p cfg.py -p toolkit.py -p mouse.device.lgs.dll # 打包
 
 ### 代码
 
-大佬封装的 `logitech.driver.dll` 没有文档, 下面是某老哥列出的该库里面的方法, 具体用法参考 `测试.罗技.py`
+大佬封装的 `logitech.driver.dll` 没有文档, 下面是某老哥列出的该库里面的方法, 具体用法参考 `logitech.test.py`
 
 ![](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress/blob/master/readme/20221204.131618.213.png)
 
