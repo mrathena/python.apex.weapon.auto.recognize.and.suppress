@@ -16,13 +16,16 @@
 
 按键说明, 可自行修改适合自己的键位
 - 结束程序: End
-- 开关切换: 鼠标侧上键
+- 压枪开关: 鼠标侧上键
 - 武器识别: 鼠标右键按下/1/2/E/Tab
+- 识别武器涉及截图和数次屏幕取点操作, 耗时相对比较长(我这边60毫秒左右), 不应该放在键鼠监听的钩子函数内, 否则可能在游戏中感觉到键鼠卡顿. 通常只在钩子函数内触发信号量改变, 在其他进程中完成识别流程
 
-适配说明, 目前仅适配了 3440×1440 分辨率下无边框窗口模式, 其他分辨率可自行适配
+适配说明
+- 目前仅适配了 3440×1440 分辨率下无边框窗口模式, 其他分辨率可自行适配
 
 源码说明
 - logitech.driver.dll: 大佬封装的可以直接调用罗技驱动的库
+- logitech.test.py: 调用 logitech.driver.dll 的演示, 以及测试罗技驱动环境是否有效(是否能通过代码操纵鼠标移动)
 - cfg.py: 数据, 包括检测数据和武器数据
 - toolkit.py: 工具包, 包括截图工具, 屏幕工具, 游戏内检测功能封装等
 - apex.py: 自动识别与压枪主程序
@@ -31,11 +34,12 @@
 # 环境准备
 
 ```shell
-conda create -n apex python=3.9.13  # 3.9.15, ctypes.CDLL 不能使用相对路径, 什么玩意儿
-conda remove -n apex --all
-conda install pywin32  # pip 的能用但有红线
-pip install -r requitements.txt
-pip install mss pynput pywin32 pyinstaller python-opencv
+conda create -n pubg python=3.10 # 使用 conda 创建名为 pubg 的虚拟环境
+conda remove -n pubg --all # 删除虚拟环境
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple # 安装依赖
+pyinstaller apex.py -p cfg.py -p toolkit.py -p mouse.device.lgs.dll # 打包
+  -F: 打包成一个 exe 文件
+  -w: 运行时不显示黑框
 ```
 
 ## 操纵键鼠
@@ -150,16 +154,6 @@ L-STAR 这把枪弹夹机制和其他枪不一样, 这里不考虑
 
 暂无法判断, 持有武器和收起武器和持有投掷物求生物品等情况, 没有能明确区分的办法
 
-## 按键逻辑
-
-- 结束程序, End键释放
-- 切换开关, 鼠标侧上键按下
-- 识别武器
-  - 鼠标右键按下时(瞄准模式). 和游戏内原本的按键功能不冲突
-  - 1(切换一号武器) / 2(切换二号武器) E(交互/更换武器) / Tab(关闭背包) 键释放时
-
-识别武器涉及截图和数次屏幕取点操作, 耗时相对比较长(60毫秒左右), 不应该放在键鼠监听的钩子函数内, 否则可能在游戏中感觉到键鼠卡顿. 通常只在钩子函数内触发信号量改变, 在其他进程中完成识别流程
-
 # 调整压枪参数
 
 参考源码中的 `测试.武器射击间隔.py` 先测出武器的射击间隔(毫秒). 
@@ -170,35 +164,19 @@ L-STAR 这把枪弹夹机制和其他枪不一样, 这里不考虑
 
 也可以找一些压枪宏, 直接抽出其中的武器压枪数据来用
 
-# 依赖
-
-```
-mss
-pynput
-pywin32
-pyinstaller
-opencv-python
-```
-
-# 打包
-
-```
-pyinstaller apex.py -p cfg.py -p toolkit.py -p mouse.device.lgs.dll
--F: 打包成一个 exe 文件
--w: 运行不显示黑框
-```
-
 # 扩展
 
-## Python Pubg 武器自动识别与压枪
+## Python 武器自动识别与压枪
+
+> [GitHub python.apex.weapon.auto.recognize.and.suppress](https://github.com/mrathena/python.apex.weapon.auto.recognize.and.suppress)
 
 > [GitHub python.pubg.weapon.auto.recognize.and.suppress](https://github.com/mrathena/python.pubg.weapon.auto.recognize.and.suppress)
 
-## Python Apex YOLO V5 6.2 目标检测与自瞄
+## Python YOLO AI 目标检测与自瞄
 
 > [CSDN Python Apex YOLO V5 6.2 目标检测与自瞄 全过程记录](https://blog.csdn.net/mrathena/article/details/126860226)
 
-> [GitHub Python Apex YOLO V5 6.2 目标检测与自瞄](https://github.com/mrathena/python.yolo.apex.autoaim.helper)
+> [GitHub python.yolo.apex.autoaim.helper](https://github.com/mrathena/python.yolo.apex.autoaim.helper)
 
 因为没有计算机视觉相关方向的专业知识, 所以做出来的东西, 有一定效果, 但是还有很多不足
 
